@@ -1,0 +1,68 @@
+.features-section {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: white;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .features-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #6b4aa5;
+    margin-bottom: 40px;
+  }
+  
+  .features-grid {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  
+  .feature-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 30px 20px;
+    box-shadow: 0px 4px 12px 7px rgba(0,0,0,0.08);
+
+  }
+  
+  .feature-icon {
+    font-size: 32px;
+    background: #ede6f9;
+    padding: 15px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-bottom: 20px;
+  }
+  
+  .feature-title {
+    font-size: 20px;
+    color: #6b4aa5;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  
+  .feature-desc {
+    font-size: 15px;
+    color: #444;
+  }
+  
+  .features-button {
+    padding: 10px 24px;
+    font-size: 16px;
+    color: white;
+    background-color: #6b4aa5;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    margin-top: 48px;
+    font-weight: bold;
+
+  }
+  
+  .features-button:hover {
+    background-color: #5a3991;
+  }
+  
