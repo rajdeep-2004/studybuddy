@@ -1,0 +1,20 @@
+.div{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    /* width: */
+    margin-left:20px;
+    margin-right:20px;
+}
+
+.div > button{
+    padding:15px;
+    font-size: large;
+    background-color: white;
+    color:#6b46c1;
+    border:2px solid #6b46c1;
+}
+
+.card > h4{
+    text-align: center;
+}
