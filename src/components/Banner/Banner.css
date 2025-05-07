@@ -1,0 +1,32 @@
+.content{
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    background-color: #7454A0;
+    color:white;
+    padding-top: 80px;
+    padding-bottom: 92px;
+}
+h1{
+    font-size: 48px;
+    line-height: 1;
+}
+
+p{
+    font-size: 20px;
+    line-height: 1.75;
+    max-width: 793px; 
+    margin: 0 auto;
+}
+
+.cta{
+    border-radius: 8px;
+    width: 144px;
+    height: 50px;
+    border: none;
+    color: #7454A0;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    margin-top: 24px;
+
+ 
+}
