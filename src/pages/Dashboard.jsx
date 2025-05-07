@@ -1,6 +1,7 @@
 import React from "react";
 import "../components/Dashboard.css"
 import Navbar from "../components/Navbar/Navbar";
+import Footer from "../components/Footer/Footer";
 import StudyGroupCard from "../components/StudyGroupCard";
 import ResourceCard from "../components/ResourceCard";
 import SessionCard from "../components/SessionCard";
@@ -111,6 +112,7 @@ function Dashboard() {
                     </div>
                 </section>
             </div>
+            <Footer />
         </div>
     );
 }
