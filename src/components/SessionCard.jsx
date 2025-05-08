@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useState } from 'react';
+import "../components/SessionCard.css"
+function SessionCard({ title, group, date, time, duration,participants, host }) {
 
-function SessionCard({ title, group, date, time, participants, host }) {
+  const [showMessage, setShowMessage] = useState(false);
+  function handleClick() {
+    setShowMessage(true);
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 3000); 
+  }
+
   return (
     <div className="card">
       <h4>{title}</h4>
@@ -9,7 +18,15 @@ function SessionCard({ title, group, date, time, participants, host }) {
       <p>⏰ {time}</p>
       <p>👥 {participants} participants</p>
       <p>🎤 Host: {host}</p>
-      <button className="join-btn">Join Session</button>
+      <p>Duration: {duration}</p>
+      <button className="join-btn" onClick={handleClick}>Join Session</button>
+
+      {showMessage && (
+        <div className='pop'>
+         <strong>Session joined</strong>
+         <div>You've successfully joined this study session</div>
+        </div>
+      )}
     </div>
   );
 }

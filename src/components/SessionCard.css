@@ -1,0 +1,26 @@
+.pop {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #f3e8ff; /* Light purple background */
+    color: #1a1a1a;
+    padding: 16px 20px;
+    border-left: 4px solid #7c3aed; /* Darker purple for border */
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-family: 'Inter', sans-serif;
+    z-index: 1000;
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0px);
+      opacity: 1;
+    }
+  }
+  

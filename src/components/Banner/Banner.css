@@ -23,10 +23,11 @@ p{
     width: 144px;
     height: 50px;
     border: none;
-    color: #7454A0;
     font-family: 'Poppins', sans-serif;
     font-weight: bold;
     margin-top: 24px;
+    color: #7454A0;
+    background-color: white;
 
  
 }

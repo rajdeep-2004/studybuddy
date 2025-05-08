@@ -1,6 +1,6 @@
 import React from 'react';
 import './Feature.css'; 
-
+import { Link } from 'react-router-dom';
 const features = [
   {
     icon: 'src/assets/people.png',
@@ -39,7 +39,8 @@ function Feature() {
         ))}
       </div>
 
-      <button className="features-button">Explore Features</button>
+      
+      <Link to="/dashboard"><button className="features-button">Explore Features</button></Link>
     </section>
   );
 }
