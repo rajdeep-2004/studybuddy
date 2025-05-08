@@ -2,10 +2,10 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: #f3e8ff; /* Light purple background */
+    background-color: #f3e8ff; 
     color: #1a1a1a;
     padding: 16px 20px;
-    border-left: 4px solid #7c3aed; /* Darker purple for border */
+    border-left: 4px solid #7c3aed; 
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     font-family: 'Inter', sans-serif;
