@@ -3,6 +3,7 @@ import "../components/SessionCard.css"
 function SessionCard({ title, group, date, time, duration,participants, host }) {
 
   const [showMessage, setShowMessage] = useState(false);
+  
   function handleClick() {
     setShowMessage(true);
     setTimeout(() => {
