@@ -1,0 +1,93 @@
+import { useState } from "react";
+import Navbar from "../components/Navbar.jsx";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { app } from "../firebase.jsx";
+import { useNavigate } from "react-router";
+import "../pages/Dashboard.jsx"
+
+const auth = getAuth(app);
+
+const SignUpPage = () => {
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  function signup() {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(() => navigate("/dashboard"))
+      .catch((error) => alert(error.message));
+  }
+
+  return (
+    <>
+      {/* Navbar */}
+      <Navbar
+        links={
+          <div className="flex items-center space-x-6">
+            <a href="#" className="text-black hover:text-[rgb(109,191,254)]">
+              Home
+            </a>
+            <a href="#" className="text-black hover:text-[rgb(109,191,254)]">
+              Contacts
+            </a>
+            <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-full hover:bg-gray-100 transition">
+              Log In
+            </button>
+          </div>
+        }
+      />
+
+      {/* Sign Up Part */}
+      <section>
+        <div className="flex justify-between">
+          {/* Left side Image */}
+
+          <img
+            className="h-232 w-250 mr-0"
+            src="src/assets/signup.jpg"
+            alt="SignUpImage"
+          />
+
+          {/* Right side form */}
+
+          <div className="w-1/2 flex items-center justify-center bg-white p-12">
+            <div className="w-full max-w-xl">
+              <h1 className="text-4xl font-bold text-[rgb(109,191,254)] mb-3">
+                Student Sign Up
+              </h1>
+              <p className="text-gray-600 text-lg mb-8">
+                Hey enter your details to create your account
+              </p>
+
+              <input
+                type="email"
+                placeholder="Enter your email address"
+                className="mb-5 px-5 py-4 w-full border rounded-xl bg-gray-100 text-lg focus:outline-none focus:ring-2 focus:ring-[rgb(109,191,254)] hover:bg-gray-200"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+
+              <input
+                type="password"
+                placeholder="Enter your password"
+                className="mb-7 px-5 py-4 w-full border rounded-xl bg-gray-100 text-lg focus:outline-none focus:ring-2 focus:ring-[rgb(109,191,254)] hover:bg-gray-200"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+
+              <button
+                className="w-full bg-[rgb(173,216,255)] border-2 border-[rgb(173,216,255)] text-white font-semibold text-lg py-4 rounded-xl transition hover:text-black hover:bg-white"
+                onClick={signup}
+              >
+                Sign Up
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+};
+
+export default SignUpPage;
