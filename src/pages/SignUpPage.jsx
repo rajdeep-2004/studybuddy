@@ -1,20 +1,22 @@
 import { useState } from "react";
-import Navbar from "../components/Navbar.jsx";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { app } from "../firebase.jsx";
 import { useNavigate } from "react-router";
-import "../pages/Dashboard.jsx"
+import { useAuth } from "../context/AuthContext.jsx";
+import Navbar from "../components/Navbar.jsx";
+import "../pages/Dashboard.jsx";
 
-const auth = getAuth(app);
+
 
 const SignUpPage = () => {
+  const auth = useAuth();
+  const signup = auth.signup;
   const navigate = useNavigate();
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  function signup() {
-    createUserWithEmailAndPassword(auth, email, password)
+  function handleSignup() {
+    signup(email, password)
       .then(() => navigate("/dashboard"))
       .catch((error) => alert(error.message));
   }
@@ -61,6 +63,14 @@ const SignUpPage = () => {
               </p>
 
               <input
+                type="text"
+                placeholder="Enter your name"
+                className="mb-5 px-5 py-4 w-full border rounded-xl bg-gray-100 text-lg focus:outline-none focus:ring-2 focus:ring-[rgb(109,191,254)] hover:bg-gray-200"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+
+              <input
                 type="email"
                 placeholder="Enter your email address"
                 className="mb-5 px-5 py-4 w-full border rounded-xl bg-gray-100 text-lg focus:outline-none focus:ring-2 focus:ring-[rgb(109,191,254)] hover:bg-gray-200"
@@ -78,7 +88,7 @@ const SignUpPage = () => {
 
               <button
                 className="w-full bg-[rgb(173,216,255)] border-2 border-[rgb(173,216,255)] text-white font-semibold text-lg py-4 rounded-xl transition hover:text-black hover:bg-white"
-                onClick={signup}
+                onClick={handleSignup}
               >
                 Sign Up
               </button>
