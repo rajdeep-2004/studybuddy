@@ -3,6 +3,7 @@ import { useUserData } from "../context/UserDataContext";
 import SideBar from "../components/SideBar";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import { Link, Links } from "react-router-dom";
 
 export default function Dashboard() {
   const { userData } = useUserData();
@@ -56,6 +57,7 @@ export default function Dashboard() {
           {groupData.length > 0 ? (
             <div className="grid grid-cols-4 gap-6">
               {groupData.map((group, i) => (
+                <Link to={"/group/" + group.id}>
                 <div
                   key={i}
                   className="bg-white rounded-xl shadow hover:scale-105 transition p-4 flex flex-col"
@@ -70,6 +72,7 @@ export default function Dashboard() {
                     {group.description || "No description."}
                   </div>
                 </div>
+                </Link>
               ))}
             </div>
           ) : (
