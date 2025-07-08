@@ -1,8 +1,11 @@
+import Navbar from "../components/Navbar.jsx";
+import "../pages/Dashboard.jsx";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext.jsx";
-import Navbar from "../components/Navbar.jsx";
-import "../pages/Dashboard.jsx";
+import { db } from "../firebase.jsx";
+import { addDoc, collection } from "firebase/firestore"; 
+
 
 
 
@@ -17,7 +20,15 @@ const SignUpPage = () => {
 
   function handleSignup() {
     signup(email, password)
-      .then(() => navigate("/dashboard"))
+      .then(async (userCredentials)=>{
+        const docRef = await addDoc(collection(db, "users"),{
+          uid: userCredentials.user.uid,
+          name: name,
+          email: email,
+          joinedGroups: []
+        })
+        navigate("/dashboard")
+      })
       .catch((error) => alert(error.message));
   }
 
