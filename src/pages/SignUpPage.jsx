@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext.jsx";
 import { db } from "../firebase.jsx";
-import { addDoc, collection } from "firebase/firestore"; 
+import { doc, setDoc } from "firebase/firestore"; 
 
 
 
@@ -21,7 +21,7 @@ const SignUpPage = () => {
   function handleSignup() {
     signup(email, password)
       .then(async (userCredentials)=>{
-        const docRef = await addDoc(collection(db, "users"),{
+        const docRef = await setDoc(doc(db, "users", userCredentials.user.uid),{
           uid: userCredentials.user.uid,
           name: name,
           email: email,
