@@ -16,6 +16,7 @@ import editIcon from "../../assets/editicon.png";
 import { useAuth } from "../../context/AuthContext.jsx";
 import Sessions from "./Sessions.jsx";
 import Todo from "./Todo.jsx";
+import Resources from "./Resources.jsx";
 
 export default function GroupPage() {
   const { currentUser } = useAuth();
@@ -182,7 +183,7 @@ export default function GroupPage() {
       case "chat":
         return <div>💬 Chat Tab - Coming Soon...</div>;
       case "resources":
-        return <div>📂 Resources Tab - Coming Soon...</div>;
+        return <Resources/>;
       case "members":
         return (
           <>
