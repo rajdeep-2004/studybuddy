@@ -154,27 +154,6 @@ export default function GroupPage() {
                 </div>
               )}
             </div>
-
-
-            {/* What’s New Section */}
-            <div>
-              <h2 className="text-xl font-semibold mb-3">🧩 What’s New</h2>
-              <div className="flex gap-4 overflow-x-auto pb-4">
-                {["DSA Tips PDF", "New Leaderboard", "Graph Quiz"].map(
-                  (item, idx) => (
-                    <div
-                      key={idx}
-                      className="min-w-[200px] bg-white p-4 rounded-lg shadow hover:scale-105 transition text-gray-700"
-                    >
-                      <div className="font-medium">{item}</div>
-                      <div className="text-sm text-gray-500 mt-1">
-                        Recently added for members
-                      </div>
-                    </div>
-                  )
-                )}
-              </div>
-            </div>
           </>
         );
 

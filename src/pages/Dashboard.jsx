@@ -84,41 +84,6 @@ export default function Dashboard() {
             </div>
           )}
         </div>
-
-        {/* Notifications */}
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">Notifications</h2>
-          <div className="space-y-4">
-            {[
-              {
-                title: "New Study Group Available!",
-                message: "Check out the AI Enthusiasts group now.",
-                time: "2 hrs ago",
-              },
-              {
-                title: "Session Reminder",
-                message: "Your session on Data Structures starts tomorrow at 5PM.",
-                time: "1 day ago",
-              },
-              {
-                title: "New Resource Added",
-                message: "Intro to React guide uploaded in Web Dev Group.",
-                time: "3 days ago",
-              },
-            ].map((n, i) => (
-              <div
-                key={i}
-                className="flex items-start space-x-3 p-4 bg-gray-100 rounded-lg"
-              >
-                <div>
-                  <div className="font-semibold">{n.title}</div>
-                  <div className="text-sm text-gray-600">{n.message}</div>
-                  <div className="text-xs text-gray-400 mt-1">{n.time}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );
