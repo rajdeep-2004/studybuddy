@@ -15,6 +15,7 @@ import { db } from "../../firebase.jsx";
 import editIcon from "../../assets/editicon.png";
 import { useAuth } from "../../context/AuthContext.jsx";
 import Sessions from "./Sessions.jsx";
+import Todo from "./Todo.jsx";
 
 export default function GroupPage() {
   const { currentUser } = useAuth();
@@ -150,7 +151,7 @@ export default function GroupPage() {
                 </div>
               )}
             </div>
-            {console.log(nextSession.link)}
+
 
             {/* What’s New Section */}
             <div>
@@ -177,7 +178,7 @@ export default function GroupPage() {
       case "sessions":
         return <Sessions />;
       case "todos":
-        return <div>✅ Todos Tab - Coming Soon...</div>;
+        return <Todo/>;
       case "chat":
         return <div>💬 Chat Tab - Coming Soon...</div>;
       case "resources":
