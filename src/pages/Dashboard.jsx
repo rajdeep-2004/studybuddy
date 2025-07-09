@@ -3,7 +3,7 @@ import { useUserData } from "../context/UserDataContext";
 import SideBar from "../components/SideBar";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
-import { Link, Links } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Dashboard() {
   const { userData } = useUserData();

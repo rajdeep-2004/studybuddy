@@ -35,10 +35,11 @@ export default function CreateGroup() {
       description: description,
       password: password,
       imageURL: imageURL,
-      createdBy: userData.name,
+      createdBy: [userData.name, userData.uid],
       createdTime: Date.now(),
       members: [userData.name],
       memberCount: 1,
+      pinnedAnnouncement: "",
     });
 
     const userRef = doc(db, "users", userData.uid);

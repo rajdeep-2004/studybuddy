@@ -1,0 +1,283 @@
+import React, { useState, useEffect } from "react";
+import Sidebar from "../../components/SideBar.jsx";
+import { useParams } from "react-router-dom";
+import { getDoc, doc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebase.jsx";
+import editIcon from "../../assets/editicon.png";
+import { useAuth } from "../../context/AuthContext.jsx";
+
+export default function GroupPage() {
+  const { currentUser } = useAuth();
+  const { groupID } = useParams();
+
+  const [activeTab, setActiveTab] = useState("overview");
+  const [groupData, setGroupData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
+  const [pinnedText, setPinnedText] = useState(
+    groupData.pinnedAnnouncement || ""
+  );
+
+  useEffect(() => {
+    const fetchGroupData = async () => {
+      try {
+        const groupRef = doc(db, "groups", groupID);
+        const group = await getDoc(groupRef);
+        setGroupData(group.data());
+      } catch (error) {
+        console.error("Error fetching group data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGroupData();
+  }, [groupID]);
+
+  const group = {
+    name: "",
+    description: "",
+    createdBy: "",
+    members: 0,
+    createdAt: "",
+    image: "",
+    upcomingEvents: [],
+    pinnedAnnouncement: "",
+  };
+
+  if (loading || !groupData) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-gray-600 text-lg">Loading group data...</div>
+      </div>
+    );
+  }
+
+  const handlePinnedUpdate = async () => {
+    try {
+      const groupRef = doc(db, "groups", groupID);
+      await updateDoc(groupRef, { pinnedAnnouncement: pinnedText });
+      setEditMode(false);
+
+      setGroupData((prev) => ({ ...prev, pinnedAnnouncement: pinnedText }));
+    } catch (err) {
+      console.error("Failed to update pinned comment", err);
+    }
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "overview":
+        return (
+          <>
+            {/* Pinned Announcement */}
+            {groupData.pinnedAnnouncement ? (
+              <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg mb-8 shadow-sm flex items-center justify-between">
+                {groupData.pinnedAnnouncement}
+                {groupData.createdBy[1] === currentUser.uid ? (
+                  <button onClick={() => setEditMode(true)}>
+                    <img src={editIcon} alt="Edit Icon" className="h-6 w-6" />
+                  </button>
+                ) : (
+                  ""
+                )}
+              </div>
+            ) : (
+              <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg mb-8 shadow-sm flex items-center justify-between">
+                {"No pinned comment"}
+                {groupData.createdBy[1] === currentUser.uid ? (
+                  <button onClick={() => setEditMode(true)}>
+                    <img src={editIcon} alt="Edit Icon" className="h-6 w-6" />
+                  </button>
+                ) : (
+                  ""
+                )}
+              </div>
+            )}
+
+            {editMode && (
+              <div className="bg-white p-6 rounded-lg shadow mb-8">
+                <h2 className="text-lg font-semibold mb-4">
+                  Edit Pinned Announcement
+                </h2>
+                <textarea
+                  value={pinnedText}
+                  onChange={(e) => setPinnedText(e.target.value)}
+                  className="w-full h-24 border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+                  placeholder="Type your announcement here..."
+                ></textarea>
+                <div className="flex justify-end">
+                  <button
+                    onClick={handlePinnedUpdate}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg"
+                  >
+                    Update Announcement
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Group Description */}
+            <div className="mb-10">
+              <h2 className="text-xl font-semibold mb-3">
+                📘 Group Description
+              </h2>
+              <div className="bg-white p-6 rounded-lg shadow text-gray-700 leading-relaxed">
+                {groupData.description}
+              </div>
+            </div>
+            {/* Upcoming Events */}
+            <div className="mb-10">
+              <h2 className="text-xl font-semibold mb-3">📅 Upcoming Events</h2>
+              {group.upcomingEvents.length === 0 ? (
+                <div className="text-gray-500 italic bg-white p-6 rounded-lg shadow">
+                  🗓️ No upcoming events. Why not plan one?
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {group.upcomingEvents.map((event, index) => (
+                    <div
+                      key={index}
+                      className="bg-white p-5 rounded-lg shadow flex items-center justify-between"
+                    >
+                      <div>
+                        <div className="text-sm text-gray-500">Upcoming</div>
+                        <div className="text-lg font-semibold">
+                          {event.title}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {event.date} · {event.time}
+                        </div>
+                      </div>
+                      <img
+                        src={event.image}
+                        alt={event.title}
+                        className="w-40 h-24 object-cover rounded-lg"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* What’s New Section */}
+            <div>
+              <h2 className="text-xl font-semibold mb-3">🧩 What’s New</h2>
+              <div className="flex gap-4 overflow-x-auto pb-4">
+                {["DSA Tips PDF", "New Leaderboard", "Graph Quiz"].map(
+                  (item, idx) => (
+                    <div
+                      key={idx}
+                      className="min-w-[200px] bg-white p-4 rounded-lg shadow hover:scale-105 transition text-gray-700"
+                    >
+                      <div className="font-medium">{item}</div>
+                      <div className="text-sm text-gray-500 mt-1">
+                        Recently added for members
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          </>
+        );
+
+      case "sessions":
+        return <div>📖 Sessions Tab - Coming Soon...</div>;
+      case "todos":
+        return <div>✅ Todos Tab - Coming Soon...</div>;
+      case "chat":
+        return <div>💬 Chat Tab - Coming Soon...</div>;
+      case "resources":
+        return <div>📂 Resources Tab - Coming Soon...</div>;
+      case "members":
+        return <div>👥 Members Tab - Coming Soon...</div>;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen bg-gray-50">
+      <Sidebar />
+
+      <div className="flex-1 p-8">
+        {/* Banner Header */}
+        <div className="relative mb-8 rounded-xl overflow-hidden shadow-md">
+          <img
+            src="https://picsum.photos/1465/288"
+            alt="Group Banner"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-opacity-40 flex items-center px-8 justify-between">
+            <div className="text-white">
+              <h1 className="text-3xl font-bold">{groupData.groupName}</h1>
+              <div className="text-sm mt-1">
+                👤 {groupData.createdBy[0] || "user"} · 👥{" "}
+                {groupData.memberCount} Members · 📅{" "}
+                {new Date(groupData.createdTime).toLocaleString("en-US", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </div>
+            </div>
+            <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg">
+              + Invite Members
+            </button>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="border-b border-gray-200 mb-6">
+          <nav className="flex space-x-6">
+            {[
+              "overview",
+              "sessions",
+              "todos",
+              "chat",
+              "resources",
+              "members",
+            ].map((tab) => (
+              <button
+                key={tab}
+                className={`pb-2 capitalize ${
+                  activeTab === tab
+                    ? "border-b-2 border-blue-500 font-medium text-blue-600"
+                    : "text-gray-500 hover:text-blue-500"
+                }`}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab === "overview" && "📘 Overview"}
+                {tab === "sessions" && "📖 Sessions"}
+                {tab === "todos" && "✅ Todos"}
+                {tab === "chat" && "💬 Chat"}
+                {tab === "resources" && "📂 Resources"}
+                {tab === "members" && "👥 Members"}
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-[3fr,1fr] gap-6">
+          {/* Left: Main tab content */}
+          <div>{renderTabContent()}</div>
+
+          {/* Right: Sidebar Insights */}
+          <div className="space-y-4">
+            <div className="bg-white rounded-lg p-4 shadow">
+              <h3 className="font-medium text-gray-700 mb-2">
+                📊 Group Insights
+              </h3>
+              <div className="text-sm text-gray-600 space-y-1">
+                <div>👥 Members Active: 10/12</div>
+                <div>✅ Avg Todo Completion: 85%</div>
+                <div>📖 Last Session: July 5</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
