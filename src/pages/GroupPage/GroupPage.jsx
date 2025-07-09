@@ -18,6 +18,7 @@ import Sessions from "./Sessions.jsx";
 import Todo from "./Todo.jsx";
 import Resources from "./Resources.jsx";
 import Members from "./Members.jsx";
+import Chat from "./Chat.jsx";
 
 export default function GroupPage() {
   const { currentUser } = useAuth();
@@ -182,7 +183,7 @@ export default function GroupPage() {
       case "todos":
         return <Todo/>;
       case "chat":
-        return <div>💬 Chat Tab - Coming Soon...</div>;
+        return <Chat/>;
       case "resources":
         return <Resources/>;
       case "members":
