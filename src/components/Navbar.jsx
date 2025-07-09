@@ -1,6 +1,5 @@
 import "../index.css";
 
-
 function Navbar({links}) {
     return (
         <nav className="sticky top-0 z-10 backdrop-blur-lg bg-opacity-10 border-b border-gray-200 flex items-center justify-between px-10 py-4">

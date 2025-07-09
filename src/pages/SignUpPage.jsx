@@ -1,33 +1,27 @@
-import Navbar from "../components/Navbar.jsx";
-import "../pages/Dashboard.jsx";
-import { useState } from "react";
-import { useNavigate } from "react-router";
-import { useAuth } from "../context/AuthContext.jsx";
+import React, { useState } from "react";
 import { db } from "../firebase.jsx";
-import { doc, setDoc } from "firebase/firestore"; 
-
-
-
+import { useAuth } from "../context/AuthContext.jsx";
+import { useNavigate } from "react-router";
+import { doc, setDoc } from "firebase/firestore";
+import Navbar from "../components/Navbar.jsx";
 
 const SignUpPage = () => {
-  const auth = useAuth();
-  const signup = auth.signup;
+  const { signup } = useAuth();
   const navigate = useNavigate();
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   function handleSignup() {
     signup(email, password)
-      .then(async (userCredentials)=>{
-        const docRef = await setDoc(doc(db, "users", userCredentials.user.uid),{
+      .then(async (userCredentials) => {
+        await setDoc(doc(db, "users", userCredentials.user.uid), {
           uid: userCredentials.user.uid,
           name: name,
           email: email,
-          joinedGroups: []
-        })
-        navigate("/dashboard")
+          joinedGroups: [],
+        });
+        navigate("/dashboard");
       })
       .catch((error) => alert(error.message));
   }
@@ -51,11 +45,10 @@ const SignUpPage = () => {
         }
       />
 
-      {/* Sign Up Part */}
+      {/* Sign Up Section */}
       <section>
         <div className="flex justify-between">
           {/* Left side Image */}
-
           <img
             className="h-232 w-250 mr-0"
             src="src/assets/signup.jpg"

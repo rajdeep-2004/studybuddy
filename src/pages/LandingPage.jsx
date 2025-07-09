@@ -5,7 +5,6 @@ function LandingPage() {
   return (
     <>
       {/* Navbar */}
-
       <Navbar
         links={
           <div className="flex items-center space-x-8">
@@ -18,8 +17,6 @@ function LandingPage() {
             <a href="#" className="text-black hover:text-[rgb(109,191,254)]">
               Contact
             </a>
-
-            {/* CTA Buttons */}
             <Link to="/signup">
               <button className="bg-[rgb(109,191,254)] border-2 border-[rgb(109,191,254)] text-white px-5 py-2 rounded-full hover:bg-white hover:text-black transition">
                 Get Started Free
