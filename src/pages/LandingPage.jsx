@@ -25,9 +25,11 @@ function LandingPage() {
                 Get Started Free
               </button>
             </Link>
-            <button className="border border-gray-300 text-gray-700 px-5 py-2 rounded-full hover:bg-gray-100 transition">
-              Log In
-            </button>
+            <Link to={"/login"}>
+              <button className="border border-gray-300 text-gray-700 px-5 py-2 rounded-full hover:bg-gray-100 transition">
+                Log In
+              </button>
+            </Link>
           </div>
         }
       />

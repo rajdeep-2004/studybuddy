@@ -4,6 +4,7 @@ import SignUpPage from "./pages/SignUpPage.jsx"
 import Dashboard from "./pages/Dashboard.jsx"
 import CreateGroup from "./pages/CreateGroup.jsx"
 import GroupPage from "./pages/GroupPage/GroupPage.jsx"
+import LoginPage from "./pages/LoginPage.jsx"
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard/>}/>
           <Route path="/create-group" element={<CreateGroup/>}/>
           <Route path="/group/:groupID" element={<GroupPage/>}/>
+          <Route path="/login" element={<LoginPage/>}/>
         </Routes>
       </BrowserRouter>
     </>

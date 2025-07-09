@@ -1,8 +1,12 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
+
 
 function SidebarItem({ icon, label }) {
   const iconPath = `${import.meta.env.BASE_URL}src/assets/${icon}`;
+
+  
 
   return (
     <div className="flex items-center gap-3 hover:bg-[#f5f6f8] rounded-lg px-4 py-2 cursor-pointer transition">
@@ -13,7 +17,20 @@ function SidebarItem({ icon, label }) {
 }
 
 const SideBar = () => {
+  
   const logoPath = `${import.meta.env.BASE_URL}src/assets/logo.png`;
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/");
+    } catch (error) {
+      alert("Failed to log out. Please try again.");
+    }
+  }
+      
 
   return (
     <div className="w-64 bg-white shadow-lg flex flex-col justify-between p-6">
@@ -41,9 +58,9 @@ const SideBar = () => {
       </div>
 
       {/* Logout */}
-      <div className="space-y-2">
+      <button className="space-y-2" onClick={handleLogout}>
         <SidebarItem icon="logouticon.png" label="Logout" />
-      </div>
+      </button>
     </div>
   );
 };
