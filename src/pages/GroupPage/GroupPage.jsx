@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/SideBar.jsx";
 import { useParams } from "react-router-dom";
-import { getDoc, doc, updateDoc } from "firebase/firestore";
+import {
+  getDoc,
+  doc,
+  updateDoc,
+  collection,
+  query,
+  orderBy,
+  limit,
+  getDocs,
+} from "firebase/firestore";
 import { db } from "../../firebase.jsx";
 import editIcon from "../../assets/editicon.png";
 import { useAuth } from "../../context/AuthContext.jsx";
+import Sessions from "./Sessions.jsx";
 
 export default function GroupPage() {
   const { currentUser } = useAuth();
@@ -14,9 +24,8 @@ export default function GroupPage() {
   const [groupData, setGroupData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
-  const [pinnedText, setPinnedText] = useState(
-    groupData.pinnedAnnouncement || ""
-  );
+  const [pinnedText, setPinnedText] = useState("");
+  const [nextSession, setNextSession] = useState(null);
 
   useEffect(() => {
     const fetchGroupData = async () => {
@@ -24,6 +33,7 @@ export default function GroupPage() {
         const groupRef = doc(db, "groups", groupID);
         const group = await getDoc(groupRef);
         setGroupData(group.data());
+        setPinnedText(group.data().pinnedAnnouncement || "");
       } catch (error) {
         console.error("Error fetching group data:", error);
       } finally {
@@ -31,19 +41,26 @@ export default function GroupPage() {
       }
     };
 
-    fetchGroupData();
-  }, [groupID]);
+    const fetchNextSession = async () => {
+      try {
+        const q = query(
+          collection(db, "groups", groupID, "sessions"),
+          orderBy("date"),
+          limit(1)
+        );
+        const snapshot = await getDocs(q);
+        if (!snapshot.empty) {
+          const session = snapshot.docs[0].data();
+          setNextSession(session);
+        }
+      } catch (error) {
+        console.error("Error fetching next session:", error);
+      }
+    };
 
-  const group = {
-    name: "",
-    description: "",
-    createdBy: "",
-    members: 0,
-    createdAt: "",
-    image: "",
-    upcomingEvents: [],
-    pinnedAnnouncement: "",
-  };
+    fetchGroupData();
+    fetchNextSession();
+  }, [groupID]);
 
   if (loading || !groupData) {
     return (
@@ -58,7 +75,6 @@ export default function GroupPage() {
       const groupRef = doc(db, "groups", groupID);
       await updateDoc(groupRef, { pinnedAnnouncement: pinnedText });
       setEditMode(false);
-
       setGroupData((prev) => ({ ...prev, pinnedAnnouncement: pinnedText }));
     } catch (err) {
       console.error("Failed to update pinned comment", err);
@@ -71,29 +87,14 @@ export default function GroupPage() {
         return (
           <>
             {/* Pinned Announcement */}
-            {groupData.pinnedAnnouncement ? (
-              <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg mb-8 shadow-sm flex items-center justify-between">
-                {groupData.pinnedAnnouncement}
-                {groupData.createdBy[1] === currentUser.uid ? (
-                  <button onClick={() => setEditMode(true)}>
-                    <img src={editIcon} alt="Edit Icon" className="h-6 w-6" />
-                  </button>
-                ) : (
-                  ""
-                )}
-              </div>
-            ) : (
-              <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg mb-8 shadow-sm flex items-center justify-between">
-                {"No pinned comment"}
-                {groupData.createdBy[1] === currentUser.uid ? (
-                  <button onClick={() => setEditMode(true)}>
-                    <img src={editIcon} alt="Edit Icon" className="h-6 w-6" />
-                  </button>
-                ) : (
-                  ""
-                )}
-              </div>
-            )}
+            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg mb-8 shadow-sm flex items-center justify-between">
+              {groupData.pinnedAnnouncement || "No pinned comment"}
+              {groupData.createdBy[1] === currentUser.uid && (
+                <button onClick={() => setEditMode(true)}>
+                  <img src={editIcon} alt="Edit Icon" className="h-6 w-6" />
+                </button>
+              )}
+            </div>
 
             {editMode && (
               <div className="bg-white p-6 rounded-lg shadow mb-8">
@@ -126,39 +127,31 @@ export default function GroupPage() {
                 {groupData.description}
               </div>
             </div>
+
             {/* Upcoming Events */}
             <div className="mb-10">
-              <h2 className="text-xl font-semibold mb-3">📅 Upcoming Events</h2>
-              {group.upcomingEvents.length === 0 ? (
-                <div className="text-gray-500 italic bg-white p-6 rounded-lg shadow">
-                  🗓️ No upcoming events. Why not plan one?
+              <h2 className="text-xl font-semibold mb-3">
+                📅 Upcoming Session
+              </h2>
+              {nextSession ? (
+                <div className="flex items-center justify-between mb-4 text-gray-700 bg-white p-6 rounded-lg shadow text-lg">
+                  <div className="">
+                    <span className="font-medium">{nextSession.title}</span> is at{" "}
+                    <span className="font-semibold">{nextSession.date}</span> on{" "}
+                    <span className="font-semibold">{nextSession.time}</span>
+                  </div>
+                  <div>
+                  <a href={nextSession.link} target="blank" className="text-[rgb(109,191,254)] hover:text-blue-500">Join</a>
+                  </div>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {group.upcomingEvents.map((event, index) => (
-                    <div
-                      key={index}
-                      className="bg-white p-5 rounded-lg shadow flex items-center justify-between"
-                    >
-                      <div>
-                        <div className="text-sm text-gray-500">Upcoming</div>
-                        <div className="text-lg font-semibold">
-                          {event.title}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          {event.date} · {event.time}
-                        </div>
-                      </div>
-                      <img
-                        src={event.image}
-                        alt={event.title}
-                        className="w-40 h-24 object-cover rounded-lg"
-                      />
-                    </div>
-                  ))}
+                <div className="text-gray-500 italic bg-white p-6 rounded-lg shadow">
+                  🗓️ No upcoming sessions.
                 </div>
               )}
             </div>
+            {console.log(nextSession.link)}
+
             {/* What’s New Section */}
             <div>
               <h2 className="text-xl font-semibold mb-3">🧩 What’s New</h2>
@@ -182,7 +175,7 @@ export default function GroupPage() {
         );
 
       case "sessions":
-        return <div>📖 Sessions Tab - Coming Soon...</div>;
+        return <Sessions />;
       case "todos":
         return <div>✅ Todos Tab - Coming Soon...</div>;
       case "chat":
@@ -190,7 +183,23 @@ export default function GroupPage() {
       case "resources":
         return <div>📂 Resources Tab - Coming Soon...</div>;
       case "members":
-        return <div>👥 Members Tab - Coming Soon...</div>;
+        return (
+          <>
+            <div>👥 Members Tab - Coming Soon...</div>
+            <div className="space-y-4">
+              <div className="bg-white rounded-lg p-4 shadow">
+                <h3 className="font-medium text-gray-700 mb-2">
+                  📊 Group Insights
+                </h3>
+                <div className="text-sm text-gray-600 space-y-1">
+                  <div>👥 Members Active: 10/12</div>
+                  <div>✅ Avg Todo Completion: 85%</div>
+                  <div>📖 Last Session: July 5</div>
+                </div>
+              </div>
+            </div>
+          </>
+        );
       default:
         return null;
     }
@@ -260,22 +269,7 @@ export default function GroupPage() {
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-[3fr,1fr] gap-6">
-          {/* Left: Main tab content */}
           <div>{renderTabContent()}</div>
-
-          {/* Right: Sidebar Insights */}
-          <div className="space-y-4">
-            <div className="bg-white rounded-lg p-4 shadow">
-              <h3 className="font-medium text-gray-700 mb-2">
-                📊 Group Insights
-              </h3>
-              <div className="text-sm text-gray-600 space-y-1">
-                <div>👥 Members Active: 10/12</div>
-                <div>✅ Avg Todo Completion: 85%</div>
-                <div>📖 Last Session: July 5</div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
