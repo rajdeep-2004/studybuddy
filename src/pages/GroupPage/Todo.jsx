@@ -13,9 +13,11 @@ import {
 import { db } from "../../firebase.jsx";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { useUserData } from "../../context/UserDataContext.jsx";
 
 export default function GroupTodos() {
   const { currentUser } = useAuth();
+  const { userData } = useUserData();
   const { groupID } = useParams();
 
   const [todos, setTodos] = useState([]);
@@ -59,6 +61,7 @@ export default function GroupTodos() {
           id: todoId,
           title: todoData.title,
           createdBy: todoData.createdBy,
+          createdByName: todoData.createdByName,
           createdAt: todoData.createdAt,
           completed,
         };
@@ -71,11 +74,12 @@ export default function GroupTodos() {
   }, [groupID, currentUser.uid]);
 
   const handleCreateTodo = async () => {
-    if (!newTodo.trim()) return;
+    if (!newTodo.trim()) return; 
     try {
       await addDoc(collection(db, "groups", groupID, "todos"), {
         title: newTodo,
-        createdBy: currentUser.uid,
+        createdBy: userData.uid,
+        createdByName: userData.name,
         createdAt: serverTimestamp(),
       });
       setNewTodo("");
@@ -83,7 +87,7 @@ export default function GroupTodos() {
       console.error("Error adding todo:", error);
     }
   };
-
+  {console.log(userData.name)}
   const toggleTodoCompletion = async (todoId, currentValue) => {
     try {
       const completionRef = doc(
@@ -93,7 +97,7 @@ export default function GroupTodos() {
         "todos",
         todoId,
         "completions",
-        currentUser.uid
+        userData.uid
       );
 
       await setDoc(completionRef, {
@@ -151,8 +155,9 @@ export default function GroupTodos() {
                 {todo.title}
               </h3>
               <p className="text-sm text-gray-500">
-                Created by: {todo.createdBy === currentUser.uid ? "You" : todo.createdBy}
+                Created by: {todo.createdBy === userData.uid ? "You" : todo.createdByName}
               </p>
+              {console.log(todo)}
             </div>
             <div className="flex items-center gap-4">
               <input
