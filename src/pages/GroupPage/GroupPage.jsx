@@ -17,6 +17,7 @@ import { useAuth } from "../../context/AuthContext.jsx";
 import Sessions from "./Sessions.jsx";
 import Todo from "./Todo.jsx";
 import Resources from "./Resources.jsx";
+import Members from "./Members.jsx";
 
 export default function GroupPage() {
   const { currentUser } = useAuth();
@@ -185,23 +186,7 @@ export default function GroupPage() {
       case "resources":
         return <Resources/>;
       case "members":
-        return (
-          <>
-            <div>👥 Members Tab - Coming Soon...</div>
-            <div className="space-y-4">
-              <div className="bg-white rounded-lg p-4 shadow">
-                <h3 className="font-medium text-gray-700 mb-2">
-                  📊 Group Insights
-                </h3>
-                <div className="text-sm text-gray-600 space-y-1">
-                  <div>👥 Members Active: 10/12</div>
-                  <div>✅ Avg Todo Completion: 85%</div>
-                  <div>📖 Last Session: July 5</div>
-                </div>
-              </div>
-            </div>
-          </>
-        );
+        return <Members/>
       default:
         return null;
     }
