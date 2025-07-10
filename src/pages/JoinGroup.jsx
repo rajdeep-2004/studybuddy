@@ -57,11 +57,9 @@ export default function JoinGroup() {
         joinedGroups: arrayUnion(groupDoc.id),
       });
 
-      alert("Joined group successfully!");
       navigate("/dashboard");
     } catch (err) {
-      console.error("Error joining group:", err);
-      alert("Something went wrong. Please try again.");
+      alert(err.message);
     }
   };
 
@@ -107,7 +105,7 @@ export default function JoinGroup() {
           <div className="pt-4">
             <button
               onClick={handleJoinGroup}
-              className="bg-blue-500 text-white px-5 py-2 rounded-lg hover:bg-white hover:text-black border-2 border-blue-500 transition"
+              className="bg-[rgb(109,191,254)] border-2 border-[rgb(109,191,254)] text-white px-5 py-2 rounded-lg hover:bg-white hover:text-black transition"
             >
               Join Group
             </button>
