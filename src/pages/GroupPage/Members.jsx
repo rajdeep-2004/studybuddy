@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { collection, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, updateDoc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase.jsx";
 import { useUserData } from "../../context/UserDataContext.jsx";
 
@@ -13,32 +13,22 @@ export default function Members() {
   const [groupCreatorUID, setGroupCreatorUID] = useState("");
 
   useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const groupRef = doc(db, "groups", groupID);
-        const groupSnap = await getDoc(groupRef);
-        const groupData = groupSnap.data();
 
-        const memberNames = groupData.members || [];
-        setGroupCreatorName(groupData.createdBy[0]);
-        setGroupCreatorUID(groupData.createdBy[1]);
+        const groupRef = doc(db, "groups", groupID)
+        const groupUnsubscribe = onSnapshot(groupRef, (groupSnap)=>{
+          const groupData = groupSnap.data()
+          const memberNames = groupData.members || [];
+          setGroupCreatorName(groupData.createdBy[0]);
+          setGroupCreatorUID(groupData.createdBy[1]);
+          setMembers(memberNames)
+        })
 
-        const usersSnap = await getDocs(collection(db, "users"));
-        const allUsers = usersSnap.docs.map((doc) => ({ uid: doc.id, ...doc.data() }));
+        return () => groupUnsubscribe();
 
-        // Match member names with user objects
-        const matchedMembers = memberNames
-          .map((members) => allUsers.find((user) => user.name === members.name))
-          .filter((user) => user); // remove undefined if any name doesn't match
 
-        setMembers(matchedMembers);
-      } catch (err) {
-        console.error("Error fetching members:", err);
-      }
-    };
+    
+  },[groupID]);
 
-    fetchMembers();
-  }, [groupID]);
 
   const handleDeleteUser = async(memberName, memberUID) => {
     const confirmDelete = confirm("Are you sure?")
@@ -80,7 +70,7 @@ export default function Members() {
               </p>
               {userData.uid === groupCreatorUID && mem.name !== groupCreatorName && (
                 <button
-                  className="bg-red-500 text-sm mt-2 rounded-lg"
+                  className="bg-red-300 text-sm mt-2 rounded-lg px-2"
                   onClick = {()=>handleDeleteUser(mem.name, mem.uid)}
                 >
                   Remove

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../firebase.jsx";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   getDoc,
   doc,
@@ -10,8 +10,10 @@ import {
   orderBy,
   limit,
   getDocs,
+  onSnapshot
 } from "firebase/firestore";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { useUserData } from "../../context/UserDataContext.jsx"
 import editIcon from "../../assets/editicon.png";
 import Sidebar from "../../components/SideBar.jsx";
 import Sessions from "./Sessions.jsx";
@@ -22,6 +24,8 @@ import Chat from "./Chat.jsx";
 
 export default function GroupPage() {
   const { currentUser } = useAuth();
+  const { userData } = useUserData();
+  const navigate = useNavigate();
   const { groupID } = useParams();
   const [activeTab, setActiveTab] = useState("overview");
   const [groupData, setGroupData] = useState([]);
@@ -29,9 +33,11 @@ export default function GroupPage() {
   const [editMode, setEditMode] = useState(false);
   const [pinnedText, setPinnedText] = useState("");
   const [nextSession, setNextSession] = useState(null);
-  const [coverPic, setCoverPic] = useState(false);
+  const [coverPic, setCoverPic] = useState(null)
+
 
   useEffect(() => {
+    if (!userData?.uid) return;
     const fetchGroupData = async () => {
       try {
         const groupRef = doc(db, "groups", groupID);
@@ -62,9 +68,21 @@ export default function GroupPage() {
       }
     };
 
+        const userRef = doc(db, "users", currentUser.uid);
+    const unsub = onSnapshot(userRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (!data.joinedGroups.includes(groupID)) {
+          alert("You are no longer a member of this group.");
+          navigate("/dashboard");
+        }
+      }
+    });
+
     fetchGroupData();
     fetchNextSession();
-  }, [groupID]);
+    return () => unsub();
+  }, [userData, groupID, navigate]);
 
   if (loading || !groupData) {
     return (
