@@ -29,7 +29,6 @@ export default function Dashboard() {
         setLoading(false);
         return;
       }
-
       const groupPromises = userData.joinedGroups.map(async (groupId) => {
         const ref = doc(db, "groups", groupId);
         const snap = await getDoc(ref);
