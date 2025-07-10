@@ -74,11 +74,11 @@ export default function Resources() {
   };
 
   const getFileIcon = (type) => {
-    if (["png", "jpg", "jpeg"].includes(type)) return "🖼️";
-    if (["pdf"].includes(type)) return "📄";
-    if (["docx", "doc"].includes(type)) return "📝";
-    if (["xlsx", "csv"].includes(type)) return "📊";
-    return "📁";
+    if (["png", "jpg", "jpeg"].includes(type)) return  `${import.meta.env.BASE_URL}src/assets/image.png`;
+    if (["pdf"].includes(type)) return `${import.meta.env.BASE_URL}src/assets/pdf.png`;
+    if (["docx", "doc"].includes(type)) return `${import.meta.env.BASE_URL}src/assets/docs.png`;
+    if (["xlsx", "csv"].includes(type)) return `${import.meta.env.BASE_URL}src/assets/image.png`;
+    return `${import.meta.env.BASE_URL}src/assets/file.png`;
   };
 
   const handleDeleteResource = async(resourceID) => {
@@ -111,7 +111,7 @@ export default function Resources() {
               key={res.id}
               className="bg-white p-4 rounded-lg shadow hover:shadow-md transition"
             >
-              <div className="text-4xl mb-2">{getFileIcon(res.fileType)}</div>
+              <div className="mb-2"><img src={getFileIcon(res.fileType)} className="h-5"></img></div>
               <h4 className="font-semibold text-md break-words">
                 {res.fileName.replace(/\.[^/.]+$/, "")}
               </h4>
