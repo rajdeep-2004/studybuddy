@@ -40,23 +40,6 @@ export default function Members() {
     fetchMembers();
   }, [groupID]);
 
-  const handleRemove = async (nameToRemove) => {
-    if (!window.confirm("Are you sure you want to remove this member?")) return;
-
-    try {
-      const groupRef = doc(db, "groups", groupID);
-      const groupSnap = await getDoc(groupRef);
-      const groupData = groupSnap.data();
-
-      const updatedMembers = groupData.members.filter((name) => name !== nameToRemove);
-
-      await setDoc(groupRef, { ...groupData, members: updatedMembers });
-      setMembers((prev) => prev.filter((mem) => mem.name !== nameToRemove));
-    } catch (err) {
-      console.error("Error removing member:", err);
-    }
-  };
-
   return (
     <div className="space-y-8">
       <h2 className="text-2xl font-semibold text-gray-800">👥 Group Members</h2>
@@ -79,7 +62,6 @@ export default function Members() {
               </p>
               {userData.uid === groupCreatorUID && mem.name !== groupCreatorName && (
                 <button
-                  onClick={() => handleRemove(mem.name)}
                   className="text-red-500 text-sm mt-2 hover:underline"
                 >
                   Remove
