@@ -47,8 +47,12 @@ export default function JoinGroup() {
       }
 
       const groupRef = doc(db, "groups", groupDoc.id);
+      const userObj = {
+        name: userData.name,
+        uid: userData.uid,
+      };
       await updateDoc(groupRef, {
-        members: arrayUnion(userData.name),
+        members: arrayUnion(userObj),
         memberCount: groupData.memberCount + 1,
       });
 

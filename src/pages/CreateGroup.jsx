@@ -45,7 +45,12 @@ export default function CreateGroup() {
       imageURL: imageURL,
       createdBy: [userData.name, userData.uid],
       createdTime: Date.now(),
-      members: [userData.name],
+      members: [
+        {
+          name: userData.name,
+          uid: userData.uid
+        }
+      ],
       memberCount: 1,
       pinnedAnnouncement: "",
     });
