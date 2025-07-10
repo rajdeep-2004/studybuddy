@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase.jsx";
 import { useUserData } from "../../context/UserDataContext.jsx";
 
@@ -28,7 +28,7 @@ export default function Members() {
 
         // Match member names with user objects
         const matchedMembers = memberNames
-          .map((name) => allUsers.find((user) => user.name === name))
+          .map((members) => allUsers.find((user) => user.name === members.name))
           .filter((user) => user); // remove undefined if any name doesn't match
 
         setMembers(matchedMembers);
@@ -39,6 +39,24 @@ export default function Members() {
 
     fetchMembers();
   }, [groupID]);
+
+  const handleDeleteUser = async(memberName, memberUID) => {
+    const confirmDelete = confirm("Are you sure?")
+    if(!confirmDelete) return;
+
+    const groupRef = doc(db, "groups" , groupID)
+    const groupSnap = await getDoc(groupRef)
+    const groupData = groupSnap.data();
+    const updatedMembers = groupData.members.filter((members)=>members.name !== memberName)
+    await updateDoc(groupRef, {members: updatedMembers})
+
+    const deluserRef = doc(db, "users", memberUID)
+    const deluserSnap = await getDoc(deluserRef)
+    const deluserData = deluserSnap.data()
+    const updatedjoinedGroups = deluserData.joinedGroups.filter((groupid)=> groupid !== groupID )
+    await updateDoc(deluserRef, {joinedGroups: updatedjoinedGroups})
+
+  }
 
   return (
     <div className="space-y-8">
@@ -62,7 +80,8 @@ export default function Members() {
               </p>
               {userData.uid === groupCreatorUID && mem.name !== groupCreatorName && (
                 <button
-                  className="text-red-500 text-sm mt-2 hover:underline"
+                  className="bg-red-500 text-sm mt-2 rounded-lg"
+                  onClick = {()=>handleDeleteUser(mem.name, mem.uid)}
                 >
                   Remove
                 </button>
