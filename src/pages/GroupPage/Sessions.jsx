@@ -7,6 +7,8 @@ import {
   orderBy,
   onSnapshot,
   serverTimestamp,
+  deleteDoc,
+  doc
 } from "firebase/firestore";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
@@ -22,6 +24,7 @@ export default function Sessions() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [link, setLink] = useState("");
+  // const [deleteSession, setDeleteSession] = useState(false);
 
   useEffect(() => {
     const q = query(
@@ -65,14 +68,27 @@ export default function Sessions() {
       setLink("");
       setShowForm(false);
     } catch (err) {
-      console.error("Error creating session:", err);
       alert("Failed to create session. Try again.");
+    }
+  };
+
+  const handleDeleteSession = async (sessionID) => {
+    try {
+      const confirmDelete = confirm("Are you sure?")
+      if(!confirmDelete) return;
+      await deleteDoc(
+        doc(db, `groups/${groupID}/sessions/${sessionID}`)
+      );
+    } catch (err) {
+      alert(err.message);
     }
   };
 
   return (
     <div className="space-y-8">
-      <h2 className="text-2xl font-semibold text-gray-800">Upcoming Sessions</h2>
+      <h2 className="text-2xl font-semibold text-gray-800">
+        Upcoming Sessions
+      </h2>
 
       {sessions.length === 0 ? (
         <div className="text-gray-500 italic bg-white p-6 rounded-lg shadow">
@@ -87,23 +103,38 @@ export default function Sessions() {
             >
               <h3 className="text-lg font-semibold mb-2">{session.title}</h3>
               <p className="text-gray-600 mb-1">
-                <span className="font-semibold">Date:</span> {session.date} 
+                <span className="font-semibold">Date:</span> {session.date}
               </p>
               <p className="text-gray-600 mb-1">
-                <span className="font-semibold">Time:</span> {session.time} 
+                <span className="font-semibold">Time:</span> {session.time}
               </p>
               {session.link && (
                 <p>
-                    <span className="text-gray-600 mb-1 font-semibold">Link: </span>
-                  <a href={session.link} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline break-all text-sm mb-1">
+                  <span className="text-gray-600 mb-1 font-semibold">
+                    Link:{" "}
+                  </span>
+                  <a
+                    href={session.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-blue-600 hover:underline break-all text-sm mb-1"
+                  >
                     {session.link}
                   </a>
                 </p>
               )}
               <p className="mt-2 text-gray-500">
                 <span className="font-semibold">Created By: </span>
-                {session.createdBy === currentUser.uid ? "You" : session.createdBy}
+                {session.createdBy === currentUser.uid
+                  ? "You"
+                  : session.createdBy}
               </p>
+              <button
+                className="bg-red-300 rounded-lg px-2 mt-2"
+                onClick={()=>handleDeleteSession(session.id)}
+              >
+                Delete
+              </button>
             </div>
           ))}
         </div>
