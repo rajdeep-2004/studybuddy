@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { db } from "../firebase.jsx";
+import { db, storage } from "../firebase.jsx";
 import {
   collection,
   addDoc,
@@ -9,6 +9,7 @@ import {
 } from "firebase/firestore";
 import { useUserData } from "../context/UserDataContext.jsx";
 import { useNavigate } from "react-router-dom";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 export default function CreateGroup() {
   const [groupName, setGroupName] = useState("");
@@ -19,9 +20,16 @@ export default function CreateGroup() {
   const { userData } = useUserData();
   const navigate = useNavigate();
 
-  const handleImageUpload = (e) => {
-    setImageURL(e.target.value);
-  };
+  const handleuploadImage = async (file) => {
+    const fileRef = ref(storage, `studybuddy/groupImg/${username}/${file.name}`)
+    try {
+      await uploadBytes(fileRef, file)
+      setImageURL(await getDownloadURL(fileRef));
+    }
+    catch (error) {
+      alert("Failed to upload image. Please try again.");
+    }
+  }
 
   const handleCreateGroup = async () => {
     if (!groupName || !username || !description || !password || !imageURL) {
@@ -107,8 +115,9 @@ export default function CreateGroup() {
               Upload Group Image URL
             </label>
             <input
-              type="url"
-              onChange={(e) => setImageURL(e.target.value)}
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleuploadImage(e.target.files[0])}
               className="w-full text-sm text-gray-500 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
