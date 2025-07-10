@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { db } from "../firebase.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import { doc, setDoc } from "firebase/firestore";
 import Navbar from "../components/Navbar.jsx";
 
@@ -11,8 +11,10 @@ const SignUpPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [create, setCreate] = useState(false);
 
   function handleSignup() {
+    setCreate(true);
     signup(email, password)
       .then(async (userCredentials) => {
         await setDoc(doc(db, "users", userCredentials.user.uid), {
@@ -21,9 +23,13 @@ const SignUpPage = () => {
           email: email,
           joinedGroups: [],
         });
+        setCreate(false); 
         navigate("/dashboard");
       })
-      .catch((error) => alert(error.message));
+      .catch((error) => {
+        alert(error.message);
+        setCreate(false); 
+      });
   }
 
   return (
@@ -32,15 +38,17 @@ const SignUpPage = () => {
       <Navbar
         links={
           <div className="flex items-center space-x-6">
-            <a href="#" className="text-black hover:text-[rgb(109,191,254)]">
+            <a href="/" className="text-black hover:text-[rgb(109,191,254)]">
               Home
             </a>
-            <a href="#" className="text-black hover:text-[rgb(109,191,254)]">
+            <a href="/" className="text-black hover:text-[rgb(109,191,254)]">
               Contacts
             </a>
-            <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-full hover:bg-gray-100 transition">
-              Log In
-            </button>
+            <Link to="/login">
+              <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-full hover:bg-gray-100 transition">
+                Log In
+              </button>
+            </Link>
           </div>
         }
       />
@@ -94,7 +102,7 @@ const SignUpPage = () => {
                 className="w-full bg-[rgb(173,216,255)] border-2 border-[rgb(173,216,255)] text-white font-semibold text-lg py-4 rounded-xl transition hover:text-black hover:bg-white"
                 onClick={handleSignup}
               >
-                Sign Up
+                {create ? "Creating..." : "Sign Up"}
               </button>
             </div>
           </div>

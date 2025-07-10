@@ -1,9 +1,8 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import { Link, useNavigate } from "react-router-dom";
 
 function SidebarItem({ icon, label }) {
-  const iconPath = `${import.meta.env.BASE_URL}src/assets/${icon}`;
+  const iconPath = `${import.meta.env.BASE_URL}src/assets/${icon}`; // Dynamic path for icons 
 
   return (
     <div className="flex items-center gap-3 hover:bg-[#f5f6f8] rounded-lg px-4 py-2 cursor-pointer transition">

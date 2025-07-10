@@ -10,6 +10,7 @@ export const useUserData = () => useContext(UserDataContext);
 export const UserDataProvider = ({ children }) => {
   const { currentUser } = useAuth();
   const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!currentUser) {
@@ -24,10 +25,11 @@ export const UserDataProvider = ({ children }) => {
       } else {
         setUserData(null);
       }
+      setLoading(false); 
     });
 
-    return () => unsubscribe(); 
-  }, [currentUser]);
+    return () => unsubscribe(); // Clean up when component unmounts
+  }, [currentUser]); // whenever currentUser changes, re-run the effect
 
   return (
     <UserDataContext.Provider value={{ userData}}>

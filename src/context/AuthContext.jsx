@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
       setCurrentUser(user);
     });
 
-    return () => unsubscribe();
+    return () => unsubscribe();  // Clean up when component unmounts
   }, []);
 
   const signup = (email, password) => {

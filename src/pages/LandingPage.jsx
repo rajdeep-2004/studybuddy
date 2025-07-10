@@ -8,13 +8,13 @@ function LandingPage() {
       <Navbar
         links={
           <div className="flex items-center space-x-8">
-            <a href="#" className="text-black hover:text-[rgb(109,191,254)]">
+            <a href="/" className="text-black hover:text-[rgb(109,191,254)]">
               Home
             </a>
-            <a href="#" className="text-black hover:text-[rgb(109,191,254)]">
+            <a href="/" className="text-black hover:text-[rgb(109,191,254)]">
               Features
             </a>
-            <a href="#" className="text-black hover:text-[rgb(109,191,254)]">
+            <a href="/" className="text-black hover:text-[rgb(109,191,254)]">
               Contact
             </a>
             <Link to="/signup">

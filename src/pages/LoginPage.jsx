@@ -8,13 +8,19 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [signin, setSignin] = useState(false);
 
   function handleLogin() {
+        setSignin(true);
     login(email, password)
       .then(() => {
         navigate("/dashboard");
+        setSignin(false);
       })
-      .catch((error) => alert(error.message));
+      .catch((error) => {
+        alert(error.message);
+        setSignin(false);
+      });
   }
 
   return (
@@ -23,10 +29,10 @@ const LoginPage = () => {
       <Navbar
         links={
           <div className="flex items-center space-x-6">
-            <a href="#" className="text-black hover:text-[rgb(109,191,254)]">
+            <a href="/" className="text-black hover:text-[rgb(109,191,254)]">
               Home
             </a>
-            <a href="#" className="text-black hover:text-[rgb(109,191,254)]">
+            <a href="/" className="text-black hover:text-[rgb(109,191,254)]">
               Contacts
             </a>
             <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-full hover:bg-gray-100 transition">
@@ -76,7 +82,7 @@ const LoginPage = () => {
                 className="w-full bg-[rgb(173,216,255)] border-2 border-[rgb(173,216,255)] text-white font-semibold text-lg py-4 rounded-xl transition hover:text-black hover:bg-white"
                 onClick={handleLogin}
               >
-                Log In
+               {signin ? "Signing In..." : "Log In"} 
               </button>
             </div>
           </div>
