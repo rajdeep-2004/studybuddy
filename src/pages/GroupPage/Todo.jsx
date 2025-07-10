@@ -19,7 +19,6 @@ export default function GroupTodos() {
   const { currentUser } = useAuth();
   const { userData } = useUserData();
   const { groupID } = useParams();
-
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState("");
 
@@ -87,7 +86,8 @@ export default function GroupTodos() {
       console.error("Error adding todo:", error);
     }
   };
-  {console.log(userData.name)}
+
+
   const toggleTodoCompletion = async (todoId, currentValue) => {
     try {
       const completionRef = doc(
@@ -120,7 +120,7 @@ export default function GroupTodos() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold">✅ Group Todos</h2>
+      <h2 className="text-2xl font-semibold">Group Todos</h2>
 
       <div className="flex gap-4">
         <input
@@ -132,7 +132,7 @@ export default function GroupTodos() {
         />
         <button
           onClick={handleCreateTodo}
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600"
+          className="bg-[rgb(109,191,254)] border-2 border-[rgb(109,191,254)] text-white px-5 py-2 rounded-lg hover:bg-white hover:text-black transition"
         >
           Add
         </button>
@@ -168,10 +168,10 @@ export default function GroupTodos() {
               />
               {todo.createdBy === currentUser.uid && (
                 <button
-                  onClick={() => handleDeleteTodo(todo.id)}
+                  onClick={() => handleDeleteTodo(todo.id)} 
                   className="text-red-500 hover:text-red-700 text-sm"
                 >
-                  ❌
+                  Delete
                 </button>
               )}
             </div>

@@ -7,6 +7,8 @@ import {
   orderBy,
   onSnapshot,
   serverTimestamp,
+  deleteDoc,
+  doc
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../../firebase.jsx";
@@ -28,7 +30,10 @@ export default function Resources() {
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const resList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const resList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       setResources(resList);
     });
 
@@ -39,7 +44,10 @@ export default function Resources() {
     if (!file) return alert("Please select a file");
     setUploading(true);
 
-    const fileRef = ref(storage, `studybuddy/groups/${groupID}/resources/${file.name}`);
+    const fileRef = ref(
+      storage,
+      `studybuddy/groups/${groupID}/resources/${file.name}`
+    );
     try {
       await uploadBytes(fileRef, file);
       const url = await getDownloadURL(fileRef);
@@ -73,9 +81,24 @@ export default function Resources() {
     return "📁";
   };
 
+  const handleDeleteResource = async(resourceID) => {
+    try {
+          const confirmDelete = confirm("Are you sure?")
+          if(!confirmDelete) return;
+          await deleteDoc(
+            doc(db, `groups/${groupID}/resources/${resourceID}`)
+          );
+        } catch (err) {
+          alert(err.message);
+        }
+      };
+  
+
   return (
     <div className="space-y-8">
-      <h2 className="text-2xl font-semibold text-gray-800">📚 Group Resources</h2>
+      <h2 className="text-2xl font-semibold text-gray-800">
+        Group Resources
+      </h2>
 
       {resources.length === 0 ? (
         <div className="text-gray-500 italic bg-white p-6 rounded-lg shadow">
@@ -90,20 +113,28 @@ export default function Resources() {
             >
               <div className="text-4xl mb-2">{getFileIcon(res.fileType)}</div>
               <h4 className="font-semibold text-md break-words">
-                {res.fileName}
+                {res.fileName.replace(/\.[^/.]+$/, "")}
               </h4>
               <a
                 href={res.fileURL}
                 target="_blank"
                 rel="noreferrer"
-                className="text-blue-600 text-sm hover:underline break-all"
+                className="text-[rgb(73,156,220)]"
                 download={res.fileName}
               >
-                Download
+                View
               </a>
-              <p className="text-sm text-gray-500 mt-1">
-                Uploaded by: {res.uploadedBy === userData.name ? "You" : res.uploadedBy}
-              </p>
+              <div className="flex justify-between">
+                <p className="text-sm text-gray-500 mt-1">
+                  Uploaded by:{" "}
+                  {res.uploadedBy === userData.name ? "You" : res.uploadedBy}
+                </p>
+                {res.uploadedBy === userData.name ? (
+                  <button className="bg-red-400 px-1 text-sm rounded-lg" onClick={()=>handleDeleteResource(res.id)}>Delete</button>
+                ) : (
+                  ""
+                )}
+              </div>
             </div>
           ))}
         </div>
