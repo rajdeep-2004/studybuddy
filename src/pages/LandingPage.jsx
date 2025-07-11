@@ -46,7 +46,7 @@ function LandingPage() {
 
           <img
             className="h-220 w-250 mr-0"
-            src="src/assets/StudyGroup.jpg"
+            src="public/StudyGroup.jpg"
             alt="Banner"
           />
         </div>

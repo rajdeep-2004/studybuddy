@@ -81,11 +81,11 @@ export default function Resources() {
   };
 
   const getFileIcon = (type) => {
-    if (["png", "jpg", "jpeg"].includes(type)) return  `${import.meta.env.BASE_URL}src/assets/image.png`;
-    if (["pdf"].includes(type)) return `${import.meta.env.BASE_URL}src/assets/pdf.png`;
-    if (["docx", "doc"].includes(type)) return `${import.meta.env.BASE_URL}src/assets/docs.png`;
-    if (["xlsx", "csv"].includes(type)) return `${import.meta.env.BASE_URL}src/assets/image.png`;
-    return `${import.meta.env.BASE_URL}src/assets/file.png`;
+    if (["png", "jpg", "jpeg"].includes(type)) return  `${import.meta.env.BASE_URL}public/image.png`;
+    if (["pdf"].includes(type)) return `${import.meta.env.BASE_URL}public/pdf.png`;
+    if (["docx", "doc"].includes(type)) return `${import.meta.env.BASE_URL}public/docs.png`;
+    if (["xlsx", "csv"].includes(type)) return `${import.meta.env.BASE_URL}public/image.png`;
+    return `${import.meta.env.BASE_URL}public/file.png`;
   };
 
   const handleDeleteResource = async(resourceID) => {

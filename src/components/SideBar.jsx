@@ -37,27 +37,27 @@ const SideBar = () => {
         {/* Navigation */}
         <nav className="space-y-2 text-gray-800">
           <Link to={"/dashboard"}>
-            <SidebarItem icon="homeicon.png" label="Home" />
+            <SidebarItem icon="public/homeicon.png" label="Home" />
           </Link>
           <Link to={"/join-group"}>
-            <SidebarItem icon="plusicon.png" label="Join a Group" />
+            <SidebarItem icon="public/plusicon.png" label="Join a Group" />
           </Link>
 
           <Link to="/create-group">
-            <SidebarItem icon="plusicon.png" label="Create a Group" />
+            <SidebarItem icon="public/plusicon.png" label="Create a Group" />
           </Link>
           <Link to="/calendar">
-            <SidebarItem icon="calendaricon.png" label="Calendar" />
+            <SidebarItem icon="public/calendaricon.png" label="Calendar" />
           </Link>
           <button className="w-52" onClick={()=>alert("Profile Page Coming in V2")}>
-            <SidebarItem icon="profileicon.png" label="Profile" />
+            <SidebarItem icon="public/profileicon.png" label="Profile" />
           </button>
         </nav>
       </div>
 
       {/* Logout */}
       <button className="space-y-2" onClick={handleLogout}>
-        <SidebarItem icon="logouticon.png" label="Logout" />
+        <SidebarItem icon="public/logouticon.png" label="Logout" />
       </button>
     </div>
   );

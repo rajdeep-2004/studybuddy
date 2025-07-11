@@ -8,7 +8,7 @@ function Navbar({ links }) {
       <div className="flex items-center space-x-2">
         <Link to="/">
           <img
-            src="src/assets/logo.png"
+            src="public/logo.png"
             alt="Study Buddy Logo"
             className="h-8 w-auto"
           />

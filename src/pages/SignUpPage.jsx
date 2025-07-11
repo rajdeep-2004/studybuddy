@@ -88,7 +88,7 @@ const SignUpPage = () => {
           {/* Left side Image */}
           <img
             className="h-232 w-250 mr-0"
-            src="src/assets/signup.jpg"
+            src="public/signup.jpg"
             alt="SignUpImage"
           />
 
