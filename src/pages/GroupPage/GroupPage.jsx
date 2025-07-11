@@ -10,10 +10,10 @@ import {
   orderBy,
   limit,
   getDocs,
-  onSnapshot
+  onSnapshot,
 } from "firebase/firestore";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { useUserData } from "../../context/UserDataContext.jsx"
+import { useUserData } from "../../context/UserDataContext.jsx";
 import editIcon from "../../assets/editicon.png";
 import Sidebar from "../../components/SideBar.jsx";
 import Sessions from "./Sessions.jsx";
@@ -33,8 +33,7 @@ export default function GroupPage() {
   const [editMode, setEditMode] = useState(false);
   const [pinnedText, setPinnedText] = useState("");
   const [nextSession, setNextSession] = useState(null);
-  const [coverPic, setCoverPic] = useState(null)
-
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   useEffect(() => {
     if (!userData?.uid) return;
@@ -68,7 +67,7 @@ export default function GroupPage() {
       }
     };
 
-        const userRef = doc(db, "users", currentUser.uid);
+    const userRef = doc(db, "users", currentUser.uid);
     const unsub = onSnapshot(userRef, (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
@@ -201,15 +200,18 @@ export default function GroupPage() {
       <div className="flex-1 p-8">
         {/*  Cover Pic */}
         <div className="relative mb-8 rounded-xl overflow-hidden shadow-md">
-          {coverPic ? (
-            <img
-              src="https://picsum.photos/1465/288"
-              alt="Group Banner"
-              className="object-cover"
-            />
-          ) : (
-            <div className="cover h-72 w-full bg-black"></div>
+          {!imgLoaded && (
+            <div className="w-full h-72 bg-gray-300 animate-pulse rounded-xl"></div> 
           )}
+
+          <img
+            src="https://picsum.photos/1465/288"
+            alt="Group Banner"
+            onLoad={() => setImgLoaded(true)}
+            className={`object-cover w-full h-72 transition-opacity duration-500 ${
+              imgLoaded ? "opacity-100" : "opacity-0"
+            }`}
+          />
         </div>
 
         {/* Group Name */}
