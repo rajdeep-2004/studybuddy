@@ -56,7 +56,7 @@ export default function Members() {
 
   return (
     <div className="space-y-8">
-      <h2 className="text-2xl font-semibold text-gray-800">👥 Group Members</h2>
+      <h2 className="text-2xl font-semibold text-gray-800">Group Members</h2>
 
       {members.length === 0 ? (
         <div className="text-gray-500 italic">No members found.</div>
@@ -86,7 +86,7 @@ export default function Members() {
                     </button>
                   )}
               </div>
-              <img src={userData.avatar} alt="Avatar" className="h-10" />
+              <img src={mem.avatar} alt="Avatar" className="h-10" />
             </div>
           ))}
         </div>
