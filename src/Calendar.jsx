@@ -1,4 +1,3 @@
-// CalendarPage.jsx
 import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -72,7 +71,7 @@ export default function CalendarPage() {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-semibold mb-4">YourCalendar</h2>
+      <h2 className="text-2xl font-semibold mb-4">Your Calendar</h2>
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
         initialView="dayGridMonth"
