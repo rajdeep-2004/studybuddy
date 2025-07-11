@@ -9,12 +9,13 @@ import {
   serverTimestamp,
   deleteDoc,
   doc,
-  updateDoc
+  updateDoc,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../../firebase.jsx";
 import { useUserData } from "../../context/UserDataContext.jsx";
-import { useAuth } from "../../context/AuthContext.jsx"
+import { useAuth } from "../../context/AuthContext.jsx";
+import { getRandomColorCombo } from "../utils/getColorCombos";
 
 export default function Resources() {
   const { groupID } = useParams();
@@ -65,11 +66,11 @@ export default function Resources() {
         uploadedByUID: userData.uid,
         uploadedAt: serverTimestamp(),
       });
-      const userRef = doc(db, "users", currentUser.uid)
-      await updateDoc(userRef, {resourcesShared: ((userData.resourcesShared)+1)})
+      const userRef = doc(db, "users", currentUser.uid);
+      await updateDoc(userRef, {
+        resourcesShared: userData.resourcesShared + 1,
+      });
 
-
-      
       setFile(null);
       setShowForm(false);
     } catch (err) {
@@ -81,31 +82,26 @@ export default function Resources() {
   };
 
   const getFileIcon = (type) => {
-    if (["png", "jpg", "jpeg"].includes(type)) return  `/image.png`;
+    if (["png", "jpg", "jpeg"].includes(type)) return `/image.png`;
     if (["pdf"].includes(type)) return `/pdf.png`;
     if (["docx", "doc"].includes(type)) return `/docs.png`;
     if (["xlsx", "csv"].includes(type)) return `/image.png`;
     return `/file.png`;
   };
 
-  const handleDeleteResource = async(resourceID) => {
+  const handleDeleteResource = async (resourceID) => {
     try {
-          const confirmDelete = confirm("Are you sure?")
-          if(!confirmDelete) return;
-          await deleteDoc(
-            doc(db, `groups/${groupID}/resources/${resourceID}`)
-          );
-        } catch (err) {
-          alert(err.message);
-        }
-      };
-  
+      const confirmDelete = confirm("Are you sure?");
+      if (!confirmDelete) return;
+      await deleteDoc(doc(db, `groups/${groupID}/resources/${resourceID}`));
+    } catch (err) {
+      alert(err.message);
+    }
+  };
 
   return (
     <div className="space-y-8">
-      <h2 className="text-2xl font-semibold text-gray-800">
-        Group Resources
-      </h2>
+      <h2 className="text-2xl font-semibold text-gray-800">Group Resources</h2>
 
       {resources.length === 0 ? (
         <div className="text-gray-500 italic bg-white p-6 rounded-lg shadow">
@@ -113,12 +109,15 @@ export default function Resources() {
         </div>
       ) : (
         <div className="grid lg:grid-cols-4 gap-4">
-          {resources.map((res) => (
+          {resources.map((res) => {
+            const { bg, text, border } = getRandomColorCombo();
             <div
               key={res.id}
-              className="bg-white p-4 rounded-lg shadow hover:shadow-md transition"
+              className={`${bg} ${text} ${border} p-4 rounded-lg shadow hover:shadow-md transition`}
             >
-              <div className="mb-2"><img src={getFileIcon(res.fileType)} className="h-5"></img></div>
+              <div className="mb-2">
+                <img src={getFileIcon(res.fileType)} className="h-5"></img>
+              </div>
               <h4 className="font-semibold text-md break-words">
                 {res.fileName.replace(/\.[^/.]+$/, "")}
               </h4>
@@ -134,16 +133,24 @@ export default function Resources() {
               <div className="flex justify-between">
                 <p className="text-sm text-gray-500 mt-1">
                   Uploaded by:{" "}
-                 <span className="font-bold"> {res.uploadedBy === userData.name ? "You" : res.uploadedBy}</span>
+                  <span className="font-bold">
+                    {" "}
+                    {res.uploadedBy === userData.name ? "You" : res.uploadedBy}
+                  </span>
                 </p>
                 {res.uploadedBy === userData.name ? (
-                  <button className="bg-red-300 px-2 text-sm rounded-lg" onClick={()=>handleDeleteResource(res.id)}>Delete</button>
+                  <button
+                    className="bg-red-300 px-2 text-sm rounded-lg"
+                    onClick={() => handleDeleteResource(res.id)}
+                  >
+                    Delete
+                  </button>
                 ) : (
                   ""
                 )}
               </div>
-            </div>
-          ))}
+            </div>;
+          })}
         </div>
       )}
 

@@ -10,6 +10,8 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase.jsx";
 import { useUserData } from "../../context/UserDataContext.jsx";
+import { getRandomColorCombo } from "../utils/getColorCombos";
+
 
 export default function Members() {
   const { groupID } = useParams();
@@ -62,10 +64,11 @@ export default function Members() {
         <div className="text-gray-500 italic">No members found.</div>
       ) : (
         <div className="grid lg:grid-cols-4 gap-4">
-          {members.map((mem) => (
+          {members.map((mem) => {
+            const { bg, text, border } = getRandomColorCombo();
             <div
               key={mem.uid}
-              className="bg-white p-4 rounded-lg shadow hover:shadow-md transition flex justify-between"
+              className={`${bg} ${text} ${border} p-4 rounded-lg shadow hover:shadow-md transition flex justify-between`}
             >
               <div>
                 {" "}
@@ -88,7 +91,7 @@ export default function Members() {
               </div>
               <img src={mem.avatar} alt="Avatar" className="h-10" />
             </div>
-          ))}
+})}
         </div>
       )}
     </div>
