@@ -47,7 +47,6 @@ const SideBar = () => {
             <SidebarItem icon="plusicon.png" label="Create a Group" />
           </Link>
           <SidebarItem icon="calendaricon.png" label="Calendar" />
-          <SidebarItem icon="resourcesicon.png" label="Resources" />
           <SidebarItem icon="profileicon.png" label="Profile" />
         </nav>
       </div>
