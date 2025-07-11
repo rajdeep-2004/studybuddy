@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useUserData } from "../context/UserDataContext";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDocs, collection, getDoc, query } from "firebase/firestore";
 import { db } from "../firebase";
 import { Link } from "react-router-dom";
 import SideBar from "../components/SideBar";
@@ -21,6 +21,7 @@ export default function Dashboard() {
   const { userData } = useUserData();
   const [groupData, setGroupData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sessionsNo, setSessionsNo] = useState(0);
   const firstName = userData?.name || "User";
 
   useEffect(() => {
@@ -29,6 +30,8 @@ export default function Dashboard() {
         setLoading(false);
         return;
       }
+
+      // Step 1: Fetch all group data
       const groupPromises = userData.joinedGroups.map(async (groupId) => {
         const ref = doc(db, "groups", groupId);
         const snap = await getDoc(ref);
@@ -37,6 +40,16 @@ export default function Dashboard() {
 
       const results = await Promise.all(groupPromises);
       setGroupData(results);
+      
+
+      // Step 2: Fetch sessions for all groups
+      let totalSessions = 0;
+      for (const group of results) {
+        const q = query(collection(db, `groups/${group.id}/sessions`));
+        const querySnapshot = await getDocs(q);
+        totalSessions += querySnapshot.size; // 🔥 cleaner and direct
+      }
+      setSessionsNo(totalSessions);
       setLoading(false);
     };
 
@@ -75,7 +88,7 @@ export default function Dashboard() {
         {/* Summary Cards */}
         <div className="flex gap-6 mb-10">
           <SummaryCard icon="📚" label="Your Groups" value={groupData.length} />
-          <SummaryCard icon="📅" label="Upcoming Sessions" value={0} />
+          <SummaryCard icon="📅" label="Upcoming Sessions" value={sessionsNo} />
           <SummaryCard icon="📁" label="Resources Shared" value={0} />
         </div>
 
