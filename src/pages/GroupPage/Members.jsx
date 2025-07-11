@@ -39,6 +39,7 @@ export default function Members() {
     const groupData = groupSnap.data();
     const updatedMembers = groupData.members.filter((members)=>members.name !== memberName)
     await updateDoc(groupRef, {members: updatedMembers})
+    await updateDoc(groupRef, {memberCount: (groupData.memberCount)-1})
 
     const deluserRef = doc(db, "users", memberUID)
     const deluserSnap = await getDoc(deluserRef)

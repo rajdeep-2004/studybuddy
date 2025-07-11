@@ -2,7 +2,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { Link, useNavigate } from "react-router-dom";
 
 function SidebarItem({ icon, label }) {
-  const iconPath = `${import.meta.env.BASE_URL}src/assets/${icon}`; // Dynamic path for icons 
+  const iconPath = `${import.meta.env.BASE_URL}src/assets/${icon}`; // Dynamic path for icons
 
   return (
     <div className="flex items-center gap-3 hover:bg-[#f5f6f8] rounded-lg px-4 py-2 cursor-pointer transition">
@@ -46,8 +46,12 @@ const SideBar = () => {
           <Link to="/create-group">
             <SidebarItem icon="plusicon.png" label="Create a Group" />
           </Link>
-          <SidebarItem icon="calendaricon.png" label="Calendar" />
-          <SidebarItem icon="profileicon.png" label="Profile" />
+          <Link to="/calendar">
+            <SidebarItem icon="calendaricon.png" label="Calendar" />
+          </Link>
+          <Link to={"/profile"}>
+            <SidebarItem icon="profileicon.png" label="Profile" />
+          </Link>
         </nav>
       </div>
 

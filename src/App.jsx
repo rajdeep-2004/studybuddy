@@ -6,7 +6,8 @@ import CreateGroup from "./pages/CreateGroup.jsx"
 import JoinGroup from "./pages/JoinGroup.jsx"
 import GroupPage from "./pages/GroupPage/GroupPage.jsx"
 import LoginPage from "./pages/LoginPage.jsx"
-
+import Calendar from './Calendar.jsx';
+import Profile from './pages/Profile';
 
 function App() {
 
@@ -21,6 +22,8 @@ function App() {
           <Route path="/join-group" element={<JoinGroup/>}/>
           <Route path="/group/:groupID" element={<GroupPage/>}/>
           <Route path="/login" element={<LoginPage/>}/>
+          <Route path="/calendar" element={<Calendar/>}/>
+          <Route path="/profile" element={<Profile/>}/>
         </Routes>
       </BrowserRouter>
     </>
