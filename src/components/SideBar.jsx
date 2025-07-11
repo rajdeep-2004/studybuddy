@@ -2,7 +2,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { Link, useNavigate } from "react-router-dom";
 
 function SidebarItem({ icon, label }) {
-  const iconPath = `${import.meta.env.BASE_URL}src/assets/${icon}`; // Dynamic path for icons
+  const iconPath = `${import.meta.env.BASE_URL}/${icon}`; // Dynamic path for icons
 
   return (
     <div className="flex items-center gap-3 hover:bg-[#f5f6f8] rounded-lg px-4 py-2 cursor-pointer transition">
@@ -13,7 +13,7 @@ function SidebarItem({ icon, label }) {
 }
 
 const SideBar = () => {
-  const logoPath = `${import.meta.env.BASE_URL}src/assets/logo.png`;
+  const logoPath = `${import.meta.env.BASE_URL}/logo.png`;
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -37,27 +37,27 @@ const SideBar = () => {
         {/* Navigation */}
         <nav className="space-y-2 text-gray-800">
           <Link to={"/dashboard"}>
-            <SidebarItem icon="public/homeicon.png" label="Home" />
+            <SidebarItem icon="homeicon.png" label="Home" />
           </Link>
           <Link to={"/join-group"}>
-            <SidebarItem icon="public/plusicon.png" label="Join a Group" />
+            <SidebarItem icon="plusicon.png" label="Join a Group" />
           </Link>
 
           <Link to="/create-group">
-            <SidebarItem icon="public/plusicon.png" label="Create a Group" />
+            <SidebarItem icon="plusicon.png" label="Create a Group" />
           </Link>
           <Link to="/calendar">
-            <SidebarItem icon="public/calendaricon.png" label="Calendar" />
+            <SidebarItem icon="calendaricon.png" label="Calendar" />
           </Link>
           <button className="w-52" onClick={()=>alert("Profile Page Coming in V2")}>
-            <SidebarItem icon="public/profileicon.png" label="Profile" />
+            <SidebarItem icon="profileicon.png" label="Profile" />
           </button>
         </nav>
       </div>
 
       {/* Logout */}
       <button className="space-y-2" onClick={handleLogout}>
-        <SidebarItem icon="public/logouticon.png" label="Logout" />
+        <SidebarItem icon="logouticon.png" label="Logout" />
       </button>
     </div>
   );

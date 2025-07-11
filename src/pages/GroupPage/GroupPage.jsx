@@ -14,7 +14,7 @@ import {
 } from "firebase/firestore";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useUserData } from "../../context/UserDataContext.jsx";
-import editIcon from "../../../public/editicon.png";
+import editIcon from "/editicon.png";
 import Sidebar from "../../components/SideBar.jsx";
 import Sessions from "./Sessions.jsx";
 import Todo from "./Todo.jsx";
