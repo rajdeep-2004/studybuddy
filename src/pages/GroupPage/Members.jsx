@@ -12,7 +12,6 @@ import { db } from "../../firebase.jsx";
 import { useUserData } from "../../context/UserDataContext.jsx";
 import { getRandomColorCombo } from "../../utils/ColourCombos.jsx";
 
-
 export default function Members() {
   const { groupID } = useParams();
   const { userData } = useUserData();
@@ -65,33 +64,35 @@ export default function Members() {
       ) : (
         <div className="grid lg:grid-cols-4 gap-4">
           {members.map((mem) => {
-            const { bg, text, border } = getRandomColorCombo();
-            <div
-              key={mem.uid}
-              className={`${bg} ${text} ${border} p-4 rounded-lg shadow hover:shadow-md transition flex justify-between`}
-            >
-              <div>
-                {" "}
-                <p className="text-sm text-gray-600 break-all">
-                  <span className="font-semibold">Name:</span> {mem.name}
-                </p>
-                <p className="text-sm mt-1">
-                  <span className="font-semibold">Role:</span>{" "}
-                  {mem.name === groupCreatorName ? "Admin" : "Member"}
-                </p>
-                {userData.uid === groupCreatorUID &&
-                  mem.name !== groupCreatorName && (
-                    <button
-                      className="bg-red-300 text-sm mt-2 rounded-lg px-2"
-                      onClick={() => handleDeleteUser(mem.name, mem.uid)}
-                    >
-                      Remove
-                    </button>
-                  )}
+            const { bg, border } = getRandomColorCombo(mem.uid);
+            return (
+              <div
+                key={mem.uid}
+                className={`${bg} ${border} p-4 rounded-lg shadow hover:shadow-md transition flex justify-between`}
+              >
+                <div>
+                  {" "}
+                  <p className="text-sm text-gray-600 break-all">
+                    <span className="font-semibold">Name:</span> {mem.name}
+                  </p>
+                  <p className="text-sm mt-1">
+                    <span className="font-semibold">Role:</span>{" "}
+                    {mem.name === groupCreatorName ? "Admin" : "Member"}
+                  </p>
+                  {userData.uid === groupCreatorUID &&
+                    mem.name !== groupCreatorName && (
+                      <button
+                        className="bg-red-300 text-sm mt-2 rounded-lg px-2"
+                        onClick={() => handleDeleteUser(mem.name, mem.uid)}
+                      >
+                        Remove
+                      </button>
+                    )}
+                </div>
+                <img src={mem.avatar} alt="Avatar" className="h-10" />
               </div>
-              <img src={mem.avatar} alt="Avatar" className="h-10" />
-            </div>
-})}
+            );
+          })}
         </div>
       )}
     </div>

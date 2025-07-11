@@ -110,46 +110,51 @@ export default function Resources() {
       ) : (
         <div className="grid lg:grid-cols-4 gap-4">
           {resources.map((res) => {
-            const { bg, text, border } = getRandomColorCombo();
-            <div
-              key={res.id}
-              className={`${bg} ${text} ${border} p-4 rounded-lg shadow hover:shadow-md transition`}
-            >
-              <div className="mb-2">
-                <img src={getFileIcon(res.fileType)} className="h-5"></img>
-              </div>
-              <h4 className="font-semibold text-md break-words">
-                {res.fileName.replace(/\.[^/.]+$/, "")}
-              </h4>
-              <a
-                href={res.fileURL}
-                target="_blank"
-                rel="noreferrer"
-                className="text-[rgb(73,156,220)]"
-                download={res.fileName}
+            const { bg, text, border } = getRandomColorCombo(res.id);
+
+            return (
+              <div
+                key={res.id}
+                className={`${bg}  ${border} p-4 rounded-lg shadow hover:shadow-md transition`}
               >
-                View
-              </a>
-              <div className="flex justify-between">
-                <p className="text-sm text-gray-500 mt-1">
-                  Uploaded by:{" "}
-                  <span className="font-bold">
-                    {" "}
-                    {res.uploadedBy === userData.name ? "You" : res.uploadedBy}
-                  </span>
-                </p>
-                {res.uploadedBy === userData.name ? (
-                  <button
-                    className="bg-red-300 px-2 text-sm rounded-lg"
-                    onClick={() => handleDeleteResource(res.id)}
-                  >
-                    Delete
-                  </button>
-                ) : (
-                  ""
-                )}
+                <div className="mb-2">
+                  <img src={getFileIcon(res.fileType)} className="h-5"></img>
+                </div>
+                <h4 className="font-semibold text-md break-words">
+                  {res.fileName.replace(/\.[^/.]+$/, "")}
+                </h4>
+                <a
+                  href={res.fileURL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[rgb(73,156,220)]"
+                  download={res.fileName}
+                >
+                  View
+                </a>
+                <div className="flex justify-between">
+                  <p className="text-sm text-gray-500 mt-1">
+                    Uploaded by:{" "}
+                    <span className="font-bold">
+                      {" "}
+                      {res.uploadedBy === userData.name
+                        ? "You"
+                        : res.uploadedBy}
+                    </span>
+                  </p>
+                  {res.uploadedBy === userData.name ? (
+                    <button
+                      className="bg-red-300 px-2 text-sm rounded-lg"
+                      onClick={() => handleDeleteResource(res.id)}
+                    >
+                      Delete
+                    </button>
+                  ) : (
+                    ""
+                  )}
+                </div>
               </div>
-            </div>;
+            );
           })}
         </div>
       )}
