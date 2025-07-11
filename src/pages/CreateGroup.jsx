@@ -59,6 +59,7 @@ export default function CreateGroup() {
         {
           name: userData.name,
           uid: userData.uid,
+          avatar: userData.avatar
         },
       ],
       memberCount: 1,
