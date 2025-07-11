@@ -49,9 +49,9 @@ const SideBar = () => {
           <Link to="/calendar">
             <SidebarItem icon="calendaricon.png" label="Calendar" />
           </Link>
-          <Link to={"/profile"}>
+          <button className="w-52" onClick={()=>alert("Profile Page Coming in V2")}>
             <SidebarItem icon="profileicon.png" label="Profile" />
-          </Link>
+          </button>
         </nav>
       </div>
 

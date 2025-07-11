@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import SideBar from "../components/SideBar";
 
 /** Reusable Summary Card */
-function SummaryCard({ icon, label, value, sign }) {
+function SummaryCard({ label, value, sign }) {
   return (
     <div className="flex-1 bg-white border border-gray-200 rounded-xl p-6 flex flex-col justify-center shadow-sm">
       <div className="text-lg font-medium text-gray-700 flex items-center gap-2">
@@ -95,7 +95,7 @@ export default function Dashboard() {
         {/* Summary Cards */}
         <div className="flex gap-6 mb-10">
           <SummaryCard label="Your Groups" value={groupData.length} sign="" />
-          <SummaryCard label="Upcoming Sessions" value={sessionsNo} sign="" />
+          <SummaryCard label="Sessions Created" value={sessionsNo} sign="" />
           <SummaryCard label="Resources Shared" value={resourcesNo} sign="" />
           <SummaryCard
             label="Task Completition Rate"
