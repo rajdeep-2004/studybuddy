@@ -26,7 +26,10 @@ export default function Chat() {
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const chatList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const chatList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       setMessages(chatList);
       scrollToBottom();
     });
@@ -48,6 +51,7 @@ export default function Chat() {
         text: newMessage.trim(),
         senderName: userData.name,
         senderUID: userData.uid,
+        senderAvatar: userData.avatar,
         timestamp: serverTimestamp(),
       });
       setNewMessage("");
@@ -56,39 +60,76 @@ export default function Chat() {
     }
   };
 
-
-
   return (
     <div className="flex flex-col h-[85vh] space-y-4">
-      <h2 className="text-2xl font-semibold text-gray-800">💬 Group Chat</h2>
+      <h2 className="text-2xl font-semibold text-gray-800">Group Chat</h2>
 
       <div className="flex flex-col flex-grow bg-gray-100 rounded-lg shadow overflow-hidden">
         <div className="flex-1 p-4 overflow-y-auto space-y-3">
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`flex ${msg.senderUID === userData.uid ? "justify-end" : "justify-start"}`}
-            >
+          {messages.map((msg) => {
+            const isOwn = msg.senderUID === userData.uid;
+
+            return (
               <div
-                className={`max-w-xs md:max-w-sm px-4 py-2 rounded-2xl shadow-sm text-sm whitespace-pre-wrap break-words
-                  ${msg.senderUID === userData.uid ? "bg-green-200 text-right" : "bg-white text-left"}`}
+                key={msg.id}
+                className={`flex items-end space-x-2 ${
+                  isOwn ? "justify-end" : "justify-start"
+                }`}
               >
-                <div className="font-semibold text-gray-700 mb-1">
-                  {msg.senderUID === userData.uid ? "You" : msg.senderName}
-                </div>
-                <div className="text-gray-900">{msg.text}</div>
-                <div className="text-[10px] text-gray-500 mt-1">
-                  {msg.timestamp?.toDate().toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  }) || "..."}
-                </div>
+                {isOwn ? (
+                  <>
+                    <div
+                      className={`max-w-xs md:max-w-sm px-4 py-2 rounded-2xl shadow-sm text-sm whitespace-pre-wrap break-words bg-green-200 text-right rounded-br-none`}
+                    >
+                      <div className="font-semibold text-gray-700 mb-1">
+                        You
+                      </div>
+                      <div className="text-gray-900">{msg.text}</div>
+                      <div className="text-[10px]  text-gray-500 mt-1 text-right">
+                        {msg.timestamp?.toDate().toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }) || "..."}
+                      </div>
+                    </div>
+
+                    <img
+                      src={msg.senderAvatar}
+                      alt="avatar"
+                      className="h-8 w-8 rounded-full"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <img
+                      src={msg.senderAvatar}
+                      alt="avatar"
+                      className="h-8 w-8 rounded-full"
+                    />
+
+                    <div
+                      className={`max-w-xs md:max-w-sm px-4 py-2 rounded-2xl shadow-sm text-sm whitespace-pre-wrap break-words bg-white text-left rounded-bl-none`}
+                    >
+                      <div className="font-semibold text-gray-700 mb-1">
+                        {msg.senderName}
+                      </div>
+                      <div className="text-gray-900">{msg.text}</div>
+                      <div className="text-[10px] text-right text-gray-500 mt-1">
+                        {msg.timestamp?.toDate().toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }) || "..."}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
           <div ref={messagesEndRef} />
         </div>
 
+        {/* Input Bar */}
         <div className="flex p-3 bg-white border-t border-gray-300 gap-2">
           <input
             type="text"
