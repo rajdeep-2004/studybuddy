@@ -5,31 +5,7 @@ function LandingPage() {
   return (
     <>
       {/* Navbar */}
-      <Navbar
-        links={
-          <div className="flex items-center space-x-8">
-            <a href="/" className="text-black hover:text-[rgb(109,191,254)]">
-              Home
-            </a>
-            <a href="/" className="text-black hover:text-[rgb(109,191,254)]">
-              Features
-            </a>
-            <a href="/" className="text-black hover:text-[rgb(109,191,254)]">
-              Contact
-            </a>
-            <Link to="/signup">
-              <button className="bg-[rgb(109,191,254)] border-2 border-[rgb(109,191,254)] text-white px-5 py-2 rounded-full hover:bg-white hover:text-black transition">
-                Get Started Free
-              </button>
-            </Link>
-            <Link to={"/login"}>
-              <button className="border border-gray-300 text-gray-700 px-5 py-2 rounded-full hover:bg-gray-100 transition">
-                Log In
-              </button>
-            </Link>
-          </div>
-        }
-      />
+      <Navbar />
 
       {/* Banner and CTA */}
 

@@ -27,15 +27,19 @@ const SignUpPage = () => {
       const uid = userCredentials.user.uid;
 
       // Step 1: Fetch avatar from API as blob
-      const avatarURL = gender === "male"
-        ? "https://avatar.iran.liara.run/public/boy"
-        : "https://avatar.iran.liara.run/public/girl";
+      const avatarURL =
+        gender === "male"
+          ? "https://avatar.iran.liara.run/public/boy"
+          : "https://avatar.iran.liara.run/public/girl";
 
       const response = await fetch(avatarURL);
       const blob = await response.blob();
 
       // Step 2: Upload avatar to Firebase Storage
-      const fileRef = ref(storage, `studybuddy/users/avatars/${uid}/${name}.png`);
+      const fileRef = ref(
+        storage,
+        `studybuddy/users/avatars/${uid}/${name}.png`
+      );
       await uploadBytes(fileRef, blob);
       const downloadURL = await getDownloadURL(fileRef);
 
@@ -64,23 +68,7 @@ const SignUpPage = () => {
   return (
     <>
       {/* Navbar */}
-      <Navbar
-        links={
-          <div className="flex items-center space-x-6">
-            <a href="/" className="text-black hover:text-[rgb(109,191,254)]">
-              Home
-            </a>
-            <a href="/" className="text-black hover:text-[rgb(109,191,254)]">
-              Contacts
-            </a>
-            <Link to="/login">
-              <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-full hover:bg-gray-100 transition">
-                Log In
-              </button>
-            </Link>
-          </div>
-        }
-      />
+      <Navbar />
 
       {/* Sign Up Section */}
       <section>
