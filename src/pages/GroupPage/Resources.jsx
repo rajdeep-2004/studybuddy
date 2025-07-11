@@ -127,10 +127,10 @@ export default function Resources() {
               <div className="flex justify-between">
                 <p className="text-sm text-gray-500 mt-1">
                   Uploaded by:{" "}
-                  {res.uploadedBy === userData.name ? "You" : res.uploadedBy}
+                 <span className="font-bold"> {res.uploadedBy === userData.name ? "You" : res.uploadedBy}</span>
                 </p>
                 {res.uploadedBy === userData.name ? (
-                  <button className="bg-red-400 px-1 text-sm rounded-lg" onClick={()=>handleDeleteResource(res.id)}>Delete</button>
+                  <button className="bg-red-300 px-2 text-sm rounded-lg" onClick={()=>handleDeleteResource(res.id)}>Delete</button>
                 ) : (
                   ""
                 )}

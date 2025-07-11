@@ -155,9 +155,8 @@ export default function GroupTodos() {
                 {todo.title}
               </h3>
               <p className="text-sm text-gray-500">
-                Created by: {todo.createdBy === userData.uid ? "You" : todo.createdByName}
+                Created by: <span className="font-bold">{todo.createdBy === userData.uid ? "You" : todo.createdByName}</span>
               </p>
-              {console.log(todo)}
             </div>
             <div className="flex items-center gap-4">
               <input
@@ -169,7 +168,7 @@ export default function GroupTodos() {
               {todo.createdBy === currentUser.uid && (
                 <button
                   onClick={() => handleDeleteTodo(todo.id)} 
-                  className="text-red-500 hover:text-red-700 text-sm"
+                  className=" rounded-lg bg-red-300 px-2 text-sm"
                 >
                   Delete
                 </button>
