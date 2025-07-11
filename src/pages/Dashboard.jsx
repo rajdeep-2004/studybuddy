@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { useUserData } from "../context/UserDataContext";
 import { doc, getDocs, collection, getDoc, query } from "firebase/firestore";
 import { db } from "../firebase";
@@ -6,13 +6,13 @@ import { Link } from "react-router-dom";
 import SideBar from "../components/SideBar";
 
 /** Reusable Summary Card */
-function SummaryCard({ icon, label, value }) {
+function SummaryCard({ icon, label, value, sign }) {
   return (
     <div className="flex-1 bg-white border border-gray-200 rounded-xl p-6 flex flex-col justify-center shadow-sm">
       <div className="text-lg font-medium text-gray-700 flex items-center gap-2">
-        <span>{icon}</span> <span>{label}</span>
+        <span>{label}</span>
       </div>
-      <div className="text-3xl font-semibold text-black">{value}</div>
+      <div className="text-3xl font-semibold text-black">{value}<span className="text-3xl font-semibold text-black">{sign}</span></div>
     </div>
   );
 }
@@ -22,6 +22,9 @@ export default function Dashboard() {
   const [groupData, setGroupData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sessionsNo, setSessionsNo] = useState(0);
+  const [resourcesNo, setResourcesNo] = useState(0);
+  const [totalTodos, setTotalTodos] = useState(0);
+  const [completedTodos, setCompletedTodos] = useState(0);
   const firstName = userData?.name || "User";
 
   useEffect(() => {
@@ -31,7 +34,6 @@ export default function Dashboard() {
         return;
       }
 
-      // Step 1: Fetch all group data
       const groupPromises = userData.joinedGroups.map(async (groupId) => {
         const ref = doc(db, "groups", groupId);
         const snap = await getDoc(ref);
@@ -40,16 +42,12 @@ export default function Dashboard() {
 
       const results = await Promise.all(groupPromises);
       setGroupData(results);
-      
 
-      // Step 2: Fetch sessions for all groups
-      let totalSessions = 0;
-      for (const group of results) {
-        const q = query(collection(db, `groups/${group.id}/sessions`));
-        const querySnapshot = await getDocs(q);
-        totalSessions += querySnapshot.size; // 🔥 cleaner and direct
-      }
-      setSessionsNo(totalSessions);
+      setSessionsNo(userData.sessionsCreated);
+      setResourcesNo(userData.resourcesShared);
+      setTotalTodos(userData.totalTodos);
+      setCompletedTodos(userData.completedTodos);
+
       setLoading(false);
     };
 
@@ -87,9 +85,18 @@ export default function Dashboard() {
 
         {/* Summary Cards */}
         <div className="flex gap-6 mb-10">
-          <SummaryCard icon="📚" label="Your Groups" value={groupData.length} />
-          <SummaryCard icon="📅" label="Upcoming Sessions" value={sessionsNo} />
-          <SummaryCard icon="📁" label="Resources Shared" value={0} />
+          <SummaryCard label="Your Groups" value={groupData.length} sign="" />
+          <SummaryCard label="Upcoming Sessions" value={sessionsNo} sign="" />
+          <SummaryCard label="Resources Shared" value={resourcesNo} sign="" />
+          <SummaryCard
+            label="Task Completition Rate"
+            value={
+              totalTodos > 0
+                ? Math.round((completedTodos / totalTodos) * 100)
+                : 0
+            }
+            sign="%"
+          />
         </div>
 
         {/* Your Groups */}

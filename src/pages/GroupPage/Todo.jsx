@@ -9,6 +9,9 @@ import {
   setDoc,
   deleteDoc,
   serverTimestamp,
+  getDoc,
+  increment,
+  updateDoc
 } from "firebase/firestore";
 import { db } from "../../firebase.jsx";
 import { useParams } from "react-router-dom";
@@ -81,6 +84,19 @@ export default function GroupTodos() {
         createdByName: userData.name,
         createdAt: serverTimestamp(),
       });
+
+      const groupRef = doc(db, "groups", groupID)
+      const groupSnap = await getDoc(groupRef)
+      const groupData = groupSnap.data()
+
+
+      const promises = groupData.members.map(async(members) =>{
+        const userRef = doc(db, "users", members.uid)
+        await updateDoc(userRef, {totalTodos: increment(1)})
+      })
+
+      await Promise.all(promises);
+
       setNewTodo("");
     } catch (error) {
       console.error("Error adding todo:", error);
@@ -100,10 +116,19 @@ export default function GroupTodos() {
         userData.uid
       );
 
+      const newValue = !currentValue
+
       await setDoc(completionRef, {
-        completed: !currentValue,
+        completed: newValue,
         completedAt: serverTimestamp(),
       });
+
+      const userRef = doc(db, "users", currentUser.uid)
+      await updateDoc(userRef, {completedTodos: increment(newValue ? 1 : -1)})
+
+
+
+
     } catch (err) {
       console.error("Error toggling todo completion:", err);
     }

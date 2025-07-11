@@ -22,6 +22,10 @@ const SignUpPage = () => {
           name: name,
           email: email,
           joinedGroups: [],
+          resourcesShared: 0,
+          sessionsCreated: 0,
+          totalTodos: 0,
+          completedTodos: 0
         });
         setCreate(false); 
         navigate("/dashboard");

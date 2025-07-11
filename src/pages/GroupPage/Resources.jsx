@@ -8,15 +8,18 @@ import {
   onSnapshot,
   serverTimestamp,
   deleteDoc,
-  doc
+  doc,
+  updateDoc
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../../firebase.jsx";
 import { useUserData } from "../../context/UserDataContext.jsx";
+import { useAuth } from "../../context/AuthContext.jsx"
 
 export default function Resources() {
   const { groupID } = useParams();
   const { userData } = useUserData();
+  const { currentUser } = useAuth();
 
   const [resources, setResources] = useState([]);
   const [file, setFile] = useState(null);
@@ -62,7 +65,11 @@ export default function Resources() {
         uploadedByUID: userData.uid,
         uploadedAt: serverTimestamp(),
       });
+      const userRef = doc(db, "users", currentUser.uid)
+      await updateDoc(userRef, {resourcesShared: ((userData.resourcesShared)+1)})
 
+
+      
       setFile(null);
       setShowForm(false);
     } catch (err) {

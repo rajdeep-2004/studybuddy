@@ -8,14 +8,17 @@ import {
   onSnapshot,
   serverTimestamp,
   deleteDoc,
-  doc
+  doc,
+  updateDoc
 } from "firebase/firestore";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
+import {useUserData} from "../../context/UserDataContext.jsx"
 
 export default function Sessions() {
   const { groupID } = useParams();
   const { currentUser } = useAuth();
+  const { userData } = useUserData();
 
   const [sessions, setSessions] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -67,6 +70,11 @@ export default function Sessions() {
       setTime("");
       setLink("");
       setShowForm(false);
+
+      const userRef = doc(db, "users", currentUser.uid)
+      await updateDoc(userRef, {sessionsCreated: ((userData.sessionsCreated)+1)})
+
+
     } catch (err) {
       alert("Failed to create session. Try again.");
     }
