@@ -9,11 +9,11 @@ import {
   serverTimestamp,
   deleteDoc,
   doc,
-  updateDoc
+  updateDoc,
 } from "firebase/firestore";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
-import {useUserData} from "../../context/UserDataContext.jsx"
+import { useUserData } from "../../context/UserDataContext.jsx";
 
 export default function Sessions() {
   const { groupID } = useParams();
@@ -27,7 +27,7 @@ export default function Sessions() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [link, setLink] = useState("");
-  // const [deleteSession, setDeleteSession] = useState(false);
+
 
   useEffect(() => {
     const q = query(
@@ -71,10 +71,10 @@ export default function Sessions() {
       setLink("");
       setShowForm(false);
 
-      const userRef = doc(db, "users", currentUser.uid)
-      await updateDoc(userRef, {sessionsCreated: ((userData.sessionsCreated)+1)})
-
-
+      const userRef = doc(db, "users", currentUser.uid);
+      await updateDoc(userRef, {
+        sessionsCreated: userData.sessionsCreated + 1,
+      });
     } catch (err) {
       alert("Failed to create session. Try again.");
     }
@@ -82,11 +82,9 @@ export default function Sessions() {
 
   const handleDeleteSession = async (sessionID) => {
     try {
-      const confirmDelete = confirm("Are you sure?")
-      if(!confirmDelete) return;
-      await deleteDoc(
-        doc(db, `groups/${groupID}/sessions/${sessionID}`)
-      );
+      const confirmDelete = confirm("Are you sure?");
+      if (!confirmDelete) return;
+      await deleteDoc(doc(db, `groups/${groupID}/sessions/${sessionID}`));
     } catch (err) {
       alert(err.message);
     }
@@ -137,12 +135,15 @@ export default function Sessions() {
                   ? "You"
                   : session.createdBy}
               </p>
-              <button
-                className="bg-red-300 rounded-lg px-2 mt-2"
-                onClick={()=>handleDeleteSession(session.id)}
-              >
-                Delete
-              </button>
+              {session.createdBy === currentUser.uid ? (
+                <button
+                  className="bg-red-300 rounded-lg px-2 mt-2"
+                  onClick={() => handleDeleteSession(session.id)}
+                >
+                  {" "}
+                  Delete
+                </button>
+              ) : null}
             </div>
           ))}
         </div>
