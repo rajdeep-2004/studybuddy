@@ -12,7 +12,10 @@ function SummaryCard({ icon, label, value, sign }) {
       <div className="text-lg font-medium text-gray-700 flex items-center gap-2">
         <span>{label}</span>
       </div>
-      <div className="text-3xl font-semibold text-black">{value}<span className="text-3xl font-semibold text-black">{sign}</span></div>
+      <div className="text-3xl font-semibold text-black">
+        {value}
+        <span className="text-3xl font-semibold text-black">{sign}</span>
+      </div>
     </div>
   );
 }
@@ -79,7 +82,7 @@ export default function Dashboard() {
             Welcome back, {firstName}!
           </h1>
           <p className="text-gray-600">
-            Ready to crush your study goals today? 🚀
+            Ready to crush your study goals today? 
           </p>
         </div>
 
@@ -124,12 +127,25 @@ export default function Dashboard() {
               ))}
             </div>
           ) : (
-            <div className="text-gray-600 italic">
-              No joined groups.{" "}
-              <button className="text-blue-600 underline ml-1 hover:text-blue-800">
-                Join now
-              </button>
-            </div>
+            <>
+              <div className="text-gray-600 italic mb-2">
+                No joined groups.{" "}
+              </div>
+              <div className="flex gap-1">
+                <Link to={"/create-group"}>
+                  {" "}
+                  <button className="bg-[rgb(109,191,254)] border-2 border-[rgb(109,191,254)] text-white px-5 py-2 rounded-lg hover:bg-white hover:text-black transition">
+                    Create Group
+                  </button>
+                </Link>
+                <Link to={"/join-group"}>
+                  {" "}
+                  <button className="bg-[rgb(109,191,254)] border-2 border-[rgb(109,191,254)] text-white px-5 py-2 rounded-lg hover:bg-white hover:text-black transition">
+                    Join Group
+                  </button>
+                </Link>
+              </div>
+            </>
           )}
         </div>
       </div>
