@@ -78,12 +78,18 @@ export default function Dashboard() {
       <div className="flex-1 px-10 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-1">
-            Welcome back, {firstName}!
-          </h1>
-          <p className="text-gray-600">
-            Ready to crush your study goals today? 
-          </p>
+          <div className="flex justify-between">
+            <div>
+              <h1 className="text-3xl font-bold mb-1">
+                Welcome back, {firstName}!
+              </h1>
+              <p className="text-gray-600">
+                Ready to crush your study goals today?
+              </p>
+            </div>
+
+            <img src={userData.avatar} className="h-15"></img>
+          </div>
         </div>
 
         {/* Summary Cards */}
