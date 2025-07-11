@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { collection, doc, getDoc, getDocs, updateDoc, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+  onSnapshot,
+} from "firebase/firestore";
 import { db } from "../../firebase.jsx";
 import { useUserData } from "../../context/UserDataContext.jsx";
 
@@ -13,41 +20,39 @@ export default function Members() {
   const [groupCreatorUID, setGroupCreatorUID] = useState("");
 
   useEffect(() => {
+    const groupRef = doc(db, "groups", groupID);
+    const groupUnsubscribe = onSnapshot(groupRef, (groupSnap) => {
+      const groupData = groupSnap.data();
+      const memberNames = groupData.members || [];
+      setGroupCreatorName(groupData.createdBy[0]);
+      setGroupCreatorUID(groupData.createdBy[1]);
+      setMembers(memberNames);
+    });
 
-        const groupRef = doc(db, "groups", groupID)
-        const groupUnsubscribe = onSnapshot(groupRef, (groupSnap)=>{
-          const groupData = groupSnap.data()
-          const memberNames = groupData.members || [];
-          setGroupCreatorName(groupData.createdBy[0]);
-          setGroupCreatorUID(groupData.createdBy[1]);
-          setMembers(memberNames)
-        })
+    return () => groupUnsubscribe();
+  }, [groupID]);
 
-        return () => groupUnsubscribe();
+  const handleDeleteUser = async (memberName, memberUID) => {
+    const confirmDelete = confirm("Are you sure?");
+    if (!confirmDelete) return;
 
-
-    
-  },[groupID]);
-
-
-  const handleDeleteUser = async(memberName, memberUID) => {
-    const confirmDelete = confirm("Are you sure?")
-    if(!confirmDelete) return;
-
-    const groupRef = doc(db, "groups" , groupID)
-    const groupSnap = await getDoc(groupRef)
+    const groupRef = doc(db, "groups", groupID);
+    const groupSnap = await getDoc(groupRef);
     const groupData = groupSnap.data();
-    const updatedMembers = groupData.members.filter((members)=>members.name !== memberName)
-    await updateDoc(groupRef, {members: updatedMembers})
-    await updateDoc(groupRef, {memberCount: (groupData.memberCount)-1})
+    const updatedMembers = groupData.members.filter(
+      (members) => members.name !== memberName
+    );
+    await updateDoc(groupRef, { members: updatedMembers });
+    await updateDoc(groupRef, { memberCount: groupData.memberCount - 1 });
 
-    const deluserRef = doc(db, "users", memberUID)
-    const deluserSnap = await getDoc(deluserRef)
-    const deluserData = deluserSnap.data()
-    const updatedjoinedGroups = deluserData.joinedGroups.filter((groupid)=> groupid !== groupID )
-    await updateDoc(deluserRef, {joinedGroups: updatedjoinedGroups})
-
-  }
+    const deluserRef = doc(db, "users", memberUID);
+    const deluserSnap = await getDoc(deluserRef);
+    const deluserData = deluserSnap.data();
+    const updatedjoinedGroups = deluserData.joinedGroups.filter(
+      (groupid) => groupid !== groupID
+    );
+    await updateDoc(deluserRef, { joinedGroups: updatedjoinedGroups });
+  };
 
   return (
     <div className="space-y-8">
@@ -60,23 +65,28 @@ export default function Members() {
           {members.map((mem) => (
             <div
               key={mem.uid}
-              className="bg-white p-4 rounded-lg shadow hover:shadow-md transition"
+              className="bg-white p-4 rounded-lg shadow hover:shadow-md transition flex justify-between"
             >
-              <p className="text-sm text-gray-600 break-all">
-                <span className="font-semibold">Name:</span> {mem.name}
-              </p>
-              <p className="text-sm mt-1">
-                <span className="font-semibold">Role:</span>{" "}
-                {mem.name === groupCreatorName ? "Admin" : "Member"}
-              </p>
-              {userData.uid === groupCreatorUID && mem.name !== groupCreatorName && (
-                <button
-                  className="bg-red-300 text-sm mt-2 rounded-lg px-2"
-                  onClick = {()=>handleDeleteUser(mem.name, mem.uid)}
-                >
-                  Remove
-                </button>
-              )}
+              <div>
+                {" "}
+                <p className="text-sm text-gray-600 break-all">
+                  <span className="font-semibold">Name:</span> {mem.name}
+                </p>
+                <p className="text-sm mt-1">
+                  <span className="font-semibold">Role:</span>{" "}
+                  {mem.name === groupCreatorName ? "Admin" : "Member"}
+                </p>
+                {userData.uid === groupCreatorUID &&
+                  mem.name !== groupCreatorName && (
+                    <button
+                      className="bg-red-300 text-sm mt-2 rounded-lg px-2"
+                      onClick={() => handleDeleteUser(mem.name, mem.uid)}
+                    >
+                      Remove
+                    </button>
+                  )}
+              </div>
+              <img src={userData.avatar} alt="Avatar" className="h-10" />
             </div>
           ))}
         </div>
