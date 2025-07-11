@@ -21,22 +21,32 @@ export default function CreateGroup() {
   const navigate = useNavigate();
 
   const handleuploadImage = async (file) => {
-    const fileRef = ref(storage, `studybuddy/groupImg/${username}/${file.name}`)
+    const fileRef = ref(
+      storage,
+      `studybuddy/groupImg/${username}/${file.name}`
+    );
     try {
-      await uploadBytes(fileRef, file)
+      await uploadBytes(fileRef, file);
       setImageURL(await getDownloadURL(fileRef));
-    }
-    catch (error) {
+    } catch (error) {
       alert("Failed to upload image. Please try again.");
     }
-  }
+  };
 
   const handleCreateGroup = async () => {
     if (!groupName || !username || !description || !password || !imageURL) {
       alert("Please fill in all fields.");
       return;
     }
-
+    console.log({
+      groupName: groupName,
+      username: username,
+      description: description,
+      password: password,
+      imageURL: imageURL,
+      userDataName: userData.name,
+      userDataUid: userData.uid,
+    });
     const groupData = await addDoc(collection(db, "groups"), {
       groupName: groupName,
       username: username,
@@ -48,8 +58,8 @@ export default function CreateGroup() {
       members: [
         {
           name: userData.name,
-          uid: userData.uid
-        }
+          uid: userData.uid,
+        },
       ],
       memberCount: 1,
       pinnedAnnouncement: "",
