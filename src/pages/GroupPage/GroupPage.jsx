@@ -31,56 +31,78 @@ export default function GroupPage() {
   const [groupData, setGroupData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
+  const [editGD, setEditGD] = useState(false);
   const [pinnedText, setPinnedText] = useState("");
+  const [groupDesc, setGroupDesc] = useState("")
   const [nextSession, setNextSession] = useState(null);
   const [imgLoaded, setImgLoaded] = useState(false);
 
   useEffect(() => {
     if (!userData?.uid) return;
-    const fetchGroupData = async () => {
-      try {
-        const groupRef = doc(db, "groups", groupID);
-        const group = await getDoc(groupRef);
-        setGroupData(group.data());
-        setPinnedText(group.data().pinnedAnnouncement || "");
-      } catch (error) {
-        alert(error.message);
-      } finally {
+
+    const groupRef = doc(db, "groups", groupID);
+    const sessionsQuery = query(
+      collection(db, "groups", groupID, "sessions"),
+      orderBy("date"),
+      limit(1)
+    );
+    const userRef = doc(db, "users", userData.uid);
+
+    // Pinned Announcement
+    const unsubscribeGroup = onSnapshot(
+      groupRef,
+      (groupSnap) => {
+        if (groupSnap.exists()) {
+          const data = groupSnap.data();
+          setGroupData(data);
+          setPinnedText(data.pinnedAnnouncement || "");
+          setLoading(false);
+        }
+      },
+      (err) => {
+        console.error("Error listening to group doc:", err);
         setLoading(false);
       }
-    };
+    );
 
-    const fetchNextSession = async () => {
-      try {
-        const q = query(
-          collection(db, "groups", groupID, "sessions"),
-          orderBy("date"),
-          limit(1)
-        );
-        const snapshot = await getDocs(q);
+    // Next Session
+    const unsubscribeSession = onSnapshot(
+      sessionsQuery,
+      (snapshot) => {
         if (!snapshot.empty) {
           const session = snapshot.docs[0].data();
           setNextSession(session);
+        } else {
+          setNextSession(null); // In case all sessions are deleted
         }
-      } catch (error) {
-        console.error("Error fetching next session:", error);
+      },
+      (err) => {
+        console.error("Error listening to session query:", err);
       }
+    );
+
+    // Checks whether current User is a member
+    const unsubscribeUser = onSnapshot(
+      userRef,
+      (docSnap) => {
+        if (docSnap.exists()) {
+          const userDoc = docSnap.data();
+          if (!userDoc.joinedGroups.includes(groupID)) {
+            alert("You are no longer a member of this group.");
+            navigate("/dashboard");
+          }
+        }
+      },
+      (err) => {
+        console.error("Error listening to user membership:", err);
+      }
+    );
+
+    return () => {
+      unsubscribeGroup();
+      unsubscribeSession();
+      unsubscribeUser();
     };
-
-    const userRef = doc(db, "users", currentUser.uid);
-    const unsub = onSnapshot(userRef, (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        if (!data.joinedGroups.includes(groupID)) {
-          alert("You are no longer a member of this group.");
-          navigate("/dashboard");
-        }
-      }
-    });
-
-    fetchGroupData();
-    fetchNextSession();
-    return () => unsub();
   }, [userData, groupID, navigate]);
 
   if (loading || !groupData) {
@@ -98,9 +120,23 @@ export default function GroupPage() {
       setEditMode(false);
       setGroupData((prev) => ({ ...prev, pinnedAnnouncement: pinnedText }));
     } catch (err) {
-      console.error("Failed to update pinned comment", err);
+      alert(err.message);
     }
   };
+
+  const handleGroupDescription = async () => {
+    try{
+      const groupRef = doc(db, "groups", groupID)
+      await updateDoc(groupRef, {description: groupDesc })
+      setEditGD(false);
+      setGroupData((prev) => ({...prev, description: groupDesc}))
+      }
+
+    
+    catch (err) {
+      alert(err.message)
+    }
+  }
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -142,10 +178,37 @@ export default function GroupPage() {
             {/* Group Description */}
             <div className="mb-10">
               <h2 className="text-xl font-semibold mb-3">Group Description</h2>
-              <div className="bg-white p-6 rounded-lg shadow text-gray-700 leading-relaxed">
+              <div className="bg-white p-6 rounded-lg shadow text-gray-700 leading-relaxed flex justify-between items-center">
                 {groupData.description}
+                {groupData.createdBy[1] === currentUser.uid && (
+                <button onClick={() => setEditGD(true)}>
+                  <img src={editIcon} alt="Edit Icon" className="h-6 w-6" />
+                </button>
+              )}
               </div>
             </div>
+
+            {editGD && (
+              <div className="bg-white p-6 rounded-lg shadow mb-8">
+                <h2 className="text-lg font-semibold mb-4">
+                  Edit Group Description
+                </h2>
+                <textarea
+                  value={groupDesc}
+                  onChange={(e) => setGroupDesc(e.target.value)}
+                  className="w-full h-24 border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+                  placeholder="Type your announcement here..."
+                ></textarea>
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleGroupDescription}
+                    className="p-2 rounded-lg text-white bg-[rgb(109,191,254)] border-2 border-[rgb(109,191,254)] hover:bg-white hover:text-black transition"
+                  >
+                    Update
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Upcoming Events */}
             <div className="mb-10">
@@ -201,7 +264,7 @@ export default function GroupPage() {
         {/*  Cover Pic */}
         <div className="relative mb-8 rounded-xl overflow-hidden shadow-md">
           {!imgLoaded && (
-            <div className="w-full h-72 bg-gray-300 animate-pulse rounded-xl"></div> 
+            <div className="w-full h-72 bg-gray-300 animate-pulse rounded-xl"></div>
           )}
 
           <img
