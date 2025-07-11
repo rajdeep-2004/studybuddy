@@ -33,7 +33,7 @@ export default function GroupPage() {
   const [editMode, setEditMode] = useState(false);
   const [editGD, setEditGD] = useState(false);
   const [pinnedText, setPinnedText] = useState("");
-  const [groupDesc, setGroupDesc] = useState("")
+  const [groupDesc, setGroupDesc] = useState("");
   const [nextSession, setNextSession] = useState(null);
   const [imgLoaded, setImgLoaded] = useState(false);
 
@@ -125,18 +125,15 @@ export default function GroupPage() {
   };
 
   const handleGroupDescription = async () => {
-    try{
-      const groupRef = doc(db, "groups", groupID)
-      await updateDoc(groupRef, {description: groupDesc })
+    try {
+      const groupRef = doc(db, "groups", groupID);
+      await updateDoc(groupRef, { description: groupDesc });
       setEditGD(false);
-      setGroupData((prev) => ({...prev, description: groupDesc}))
-      }
-
-    
-    catch (err) {
-      alert(err.message)
+      setGroupData((prev) => ({ ...prev, description: groupDesc }));
+    } catch (err) {
+      alert(err.message);
     }
-  }
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -181,10 +178,10 @@ export default function GroupPage() {
               <div className="bg-white p-6 rounded-lg shadow text-gray-700 leading-relaxed flex justify-between items-center">
                 {groupData.description}
                 {groupData.createdBy[1] === currentUser.uid && (
-                <button onClick={() => setEditGD(true)}>
-                  <img src={editIcon} alt="Edit Icon" className="h-6 w-6" />
-                </button>
-              )}
+                  <button onClick={() => setEditGD(true)}>
+                    <img src={editIcon} alt="Edit Icon" className="h-6 w-6" />
+                  </button>
+                )}
               </div>
             </div>
 
@@ -262,16 +259,16 @@ export default function GroupPage() {
 
       <div className="flex-1 p-8">
         {/*  Cover Pic */}
-        <div className="relative mb-8 rounded-xl overflow-hidden shadow-md">
-          {!imgLoaded && (
-            <div className="w-full h-72 bg-gray-300 animate-pulse rounded-xl"></div>
-          )}
+        <div className="relative mb-8 rounded-xl overflow-hidden shadow-md h-72">
+          {!imgLoaded ? (
+            <div className="w-full h-full bg-gray-300 animate-pulse rounded-xl absolute inset-0 z-10" />
+          ) : null}
 
           <img
             src="https://picsum.photos/1465/288"
             alt="Group Banner"
             onLoad={() => setImgLoaded(true)}
-            className={`object-cover w-full h-72 transition-opacity duration-500 ${
+            className={`object-cover w-full h-full rounded-xl transition-opacity duration-500 ${
               imgLoaded ? "opacity-100" : "opacity-0"
             }`}
           />
