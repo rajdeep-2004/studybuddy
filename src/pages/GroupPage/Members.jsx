@@ -10,7 +10,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase.jsx";
 import { useUserData } from "../../context/UserDataContext.jsx";
-import { getRandomColorCombo } from "../utils/getColorCombos";
+import { getRandomColorCombo } from "../../utils/ColourCombos.jsx";
 
 
 export default function Members() {

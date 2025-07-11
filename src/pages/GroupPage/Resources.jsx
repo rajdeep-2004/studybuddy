@@ -15,7 +15,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../../firebase.jsx";
 import { useUserData } from "../../context/UserDataContext.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { getRandomColorCombo } from "../utils/getColorCombos";
+import { getRandomColorCombo } from "../../utils/ColourCombos.jsx";
 
 export default function Resources() {
   const { groupID } = useParams();
