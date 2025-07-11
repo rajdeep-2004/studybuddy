@@ -11,7 +11,7 @@ import {
   serverTimestamp,
   getDoc,
   increment,
-  updateDoc
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../../firebase.jsx";
 import { useParams } from "react-router-dom";
@@ -24,6 +24,7 @@ export default function GroupTodos() {
   const { groupID } = useParams();
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState("");
+  const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
     const todosRef = collection(db, "groups", groupID, "todos");
@@ -47,17 +48,20 @@ export default function GroupTodos() {
         let completed = false;
 
         // Subscribe to completion status of each todo
-        const unsubscribeCompletion = onSnapshot(completionRef, (completionSnap) => {
-          if (completionSnap.exists()) {
-            completed = completionSnap.data().completed;
+        const unsubscribeCompletion = onSnapshot(
+          completionRef,
+          (completionSnap) => {
+            if (completionSnap.exists()) {
+              completed = completionSnap.data().completed;
+            }
+            setTodos((prevTodos) => {
+              const updated = prevTodos.map((t) =>
+                t.id === todoId ? { ...t, completed } : t
+              );
+              return updated;
+            });
           }
-          setTodos((prevTodos) => {
-            const updated = prevTodos.map((t) =>
-              t.id === todoId ? { ...t, completed } : t
-            );
-            return updated;
-          });
-        });
+        );
 
         return {
           id: todoId,
@@ -76,7 +80,7 @@ export default function GroupTodos() {
   }, [groupID, currentUser.uid]);
 
   const handleCreateTodo = async () => {
-    if (!newTodo.trim()) return; 
+    if (!newTodo.trim()) return;
     try {
       await addDoc(collection(db, "groups", groupID, "todos"), {
         title: newTodo,
@@ -85,15 +89,14 @@ export default function GroupTodos() {
         createdAt: serverTimestamp(),
       });
 
-      const groupRef = doc(db, "groups", groupID)
-      const groupSnap = await getDoc(groupRef)
-      const groupData = groupSnap.data()
+      const groupRef = doc(db, "groups", groupID);
+      const groupSnap = await getDoc(groupRef);
+      const groupData = groupSnap.data();
 
-
-      const promises = groupData.members.map(async(members) =>{
-        const userRef = doc(db, "users", members.uid)
-        await updateDoc(userRef, {totalTodos: increment(1)})
-      })
+      const promises = groupData.members.map(async (members) => {
+        const userRef = doc(db, "users", members.uid);
+        await updateDoc(userRef, { totalTodos: increment(1) });
+      });
 
       await Promise.all(promises);
 
@@ -102,7 +105,6 @@ export default function GroupTodos() {
       console.error("Error adding todo:", error);
     }
   };
-
 
   const toggleTodoCompletion = async (todoId, currentValue) => {
     try {
@@ -116,19 +118,18 @@ export default function GroupTodos() {
         userData.uid
       );
 
-      const newValue = !currentValue
+      const newValue = !currentValue;
 
       await setDoc(completionRef, {
         completed: newValue,
         completedAt: serverTimestamp(),
       });
 
-      const userRef = doc(db, "users", currentUser.uid)
-      await updateDoc(userRef, {completedTodos: increment(newValue ? 1 : -1)})
-
-
-
-
+      const userRef = doc(db, "users", currentUser.uid);
+      await updateDoc(userRef, {
+        completedTodos: increment(newValue ? 1 : -1),
+      });
+      setCompleted(newValue ? true : false);
     } catch (err) {
       console.error("Error toggling todo completion:", err);
     }
@@ -138,6 +139,11 @@ export default function GroupTodos() {
     try {
       const todoRef = doc(db, "groups", groupID, "todos", todoId);
       await deleteDoc(todoRef);
+
+      const userRef = doc(db, "users", currentUser.uid);
+      await updateDoc(userRef, {
+        totalTodos: increment(completed ? -1 : 1),
+      });
     } catch (err) {
       console.error("Error deleting todo:", err);
     }
@@ -164,43 +170,49 @@ export default function GroupTodos() {
       </div>
 
       <div className="grid gap-4">
-        {todos.map((todo) => (
-          <div
-            key={todo.id}
-            className={`p-4 rounded-lg shadow flex items-center justify-between ${
-              todo.completed ? "bg-green-100" : "bg-white"
-            }`}
-          >
-            <div>
-              <h3
-                className={`text-lg font-medium ${
-                  todo.completed ? "line-through text-gray-500" : ""
-                }`}
+        {todos.map((todo) =>
+          todo.completed ? (
+            <></>
+          ) : (
+            <>
+              {" "}
+              <div
+                key={todo.id}
+                className={`p-4 rounded-lg shadow flex items-center justify-between ${"bg-white"}`}
               >
-                {todo.title}
-              </h3>
-              <p className="text-sm text-gray-500">
-                Created by: <span className="font-bold">{todo.createdBy === userData.uid ? "You" : todo.createdByName}</span>
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <input
-                type="checkbox"
-                checked={todo.completed}
-                onChange={() => toggleTodoCompletion(todo.id, todo.completed)}
-                className="w-5 h-5"
-              />
-              {todo.createdBy === currentUser.uid && (
-                <button
-                  onClick={() => handleDeleteTodo(todo.id)} 
-                  className=" rounded-lg bg-red-300 px-2 text-sm"
-                >
-                  Delete
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
+                <div>
+                  <h3 className={`text-lg font-medium`}>{todo.title}</h3>
+                  <p className="text-sm text-gray-500">
+                    Created by:{" "}
+                    <span className="font-bold">
+                      {todo.createdBy === userData.uid
+                        ? "You"
+                        : todo.createdByName}
+                    </span>
+                  </p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="checkbox"
+                    checked={todo.completed}
+                    onChange={() =>
+                      toggleTodoCompletion(todo.id, todo.completed)
+                    }
+                    className="w-5 h-5"
+                  />
+                  {todo.createdBy === currentUser.uid && (
+                    <button
+                      onClick={() => handleDeleteTodo(todo.id)}
+                      className=" rounded-lg bg-red-300 px-2 text-sm"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+              </div>
+            </>
+          )
+        )}
       </div>
     </div>
   );
