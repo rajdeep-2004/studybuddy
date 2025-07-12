@@ -139,7 +139,6 @@ export default function GroupTodos() {
   };
 
   const handleDeleteTodo = async (todoId, completedByCurrentUser) => {
-    console.log(completedByCurrentUser)
     try {
       await deleteDoc(doc(db, "groups", groupID, "todos", todoId));
 
