@@ -95,7 +95,7 @@ export default function Dashboard() {
           <SummaryCard label="Your Groups" value={groupData.length} sign="" />
           <SummaryCard label="Upcoming Sessions" value={sessionsNo} sign="" />
           <SummaryCard label="Resources Shared" value={resourcesNo} sign="" />
-          <SummaryCard label="Task Left" value={totalTodos} sign="%" />
+          <SummaryCard label="Task Left" value={totalTodos} sign="" />
         </div>
 
         {/* Your Groups */}
