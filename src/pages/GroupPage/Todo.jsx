@@ -108,7 +108,7 @@ export default function GroupTodos() {
     }
   };
 
-  const toggleTodoCompletion = async (todoId, currentValue) => {
+  const toggleTodoCompletion = async (todoId) => {
     try {
       const completionRef = doc(
         db,
@@ -120,16 +120,16 @@ export default function GroupTodos() {
         userData.uid
       );
 
-      const newValue = !currentValue;
+
 
       await setDoc(completionRef, {
-        completed: newValue,
+        completed: completed,
         completedAt: serverTimestamp(),
       });
 
       const userRef = doc(db, "users", userData.uid);
       await updateDoc(userRef, {
-        totalTodos: increment(newValue ? -1 : +1),
+        totalTodos: increment(-1),
       });
     } catch (err) {
       console.error("Error toggling todo completion:", err);
@@ -193,7 +193,7 @@ export default function GroupTodos() {
                 <input
                   type="checkbox"
                   checked={todo.completed}
-                  onChange={() => toggleTodoCompletion(todo.id, todo.completed)}
+                  onChange={() => toggleTodoCompletion(todo.id)}
                   className="w-5 h-5"
                 />
                 {todo.createdBy === userData.uid && (
