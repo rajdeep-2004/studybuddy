@@ -26,7 +26,6 @@ export default function GroupTodos() {
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState("");
   const [groupMembers, setGroupMembers] = useState(null);
-  const [completed, setCompleted] = useState(false)
 
   useEffect(() => {
     const getGroupData = async () => {
@@ -75,7 +74,7 @@ export default function GroupTodos() {
           createdBy: todoData.createdBy,
           createdByName: todoData.createdByName,
           createdAt: todoData.createdAt,
-          completed: false, 
+          completed: false,
         });
       });
 
@@ -130,15 +129,14 @@ export default function GroupTodos() {
 
       const userRef = doc(db, "users", userData.uid);
       await updateDoc(userRef, {
-        completedTodos: increment(newValue ? 1 : -1),
+        totalTodos: increment(newValue ? 1 : -1),
       });
-      setCompleted(newValue ? true: false)
     } catch (err) {
       console.error("Error toggling todo completion:", err);
     }
   };
 
-  const handleDeleteTodo = async (todoId, completedByCurrentUser) => {
+  const handleDeleteTodo = async (todoId) => {
     try {
       await deleteDoc(doc(db, "groups", groupID, "todos", todoId));
 
@@ -146,7 +144,6 @@ export default function GroupTodos() {
         const userRef = doc(db, "users", member.uid);
         await updateDoc(userRef, {
           totalTodos: increment(-1),
-          completedTodos: completed ? increment(-1) : increment(0)
         });
       }
     } catch (err) {
@@ -196,16 +193,12 @@ export default function GroupTodos() {
                 <input
                   type="checkbox"
                   checked={todo.completed}
-                  onChange={() =>
-                    toggleTodoCompletion(todo.id, todo.completed)
-                  }
+                  onChange={() => toggleTodoCompletion(todo.id, todo.completed)}
                   className="w-5 h-5"
                 />
                 {todo.createdBy === userData.uid && (
                   <button
-                    onClick={() =>
-                      handleDeleteTodo(todo.id, todo.completed)
-                    }
+                    onClick={() => handleDeleteTodo(todo.id)}
                     className="rounded-lg bg-red-300 px-2 text-sm"
                   >
                     Delete

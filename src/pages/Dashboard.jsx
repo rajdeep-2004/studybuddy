@@ -27,7 +27,6 @@ export default function Dashboard() {
   const [sessionsNo, setSessionsNo] = useState(0);
   const [resourcesNo, setResourcesNo] = useState(0);
   const [totalTodos, setTotalTodos] = useState(0);
-  const [completedTodos, setCompletedTodos] = useState(0);
   const firstName = userData?.name || "User";
 
   useEffect(() => {
@@ -49,7 +48,6 @@ export default function Dashboard() {
       setSessionsNo(userData.upcomingSessions);
       setResourcesNo(userData.resourcesShared);
       setTotalTodos(userData.totalTodos);
-      setCompletedTodos(userData.completedTodos);
 
       setLoading(false);
     };
@@ -97,15 +95,7 @@ export default function Dashboard() {
           <SummaryCard label="Your Groups" value={groupData.length} sign="" />
           <SummaryCard label="Upcoming Sessions" value={sessionsNo} sign="" />
           <SummaryCard label="Resources Shared" value={resourcesNo} sign="" />
-          <SummaryCard
-            label="Task Completition Rate"
-            value={
-              totalTodos > 0
-                ? Math.round((completedTodos / totalTodos) * 100)
-                : 0
-            }
-            sign="%"
-          />
+          <SummaryCard label="Task Left" value={totalTodos} sign="%" />
         </div>
 
         {/* Your Groups */}
