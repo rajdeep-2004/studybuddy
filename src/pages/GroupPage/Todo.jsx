@@ -129,7 +129,7 @@ export default function GroupTodos() {
 
       const userRef = doc(db, "users", userData.uid);
       await updateDoc(userRef, {
-        totalTodos: increment(newValue ? 1 : -1),
+        totalTodos: increment(newValue ? -1 : +1),
       });
     } catch (err) {
       console.error("Error toggling todo completion:", err);
