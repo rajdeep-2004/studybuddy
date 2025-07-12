@@ -38,15 +38,7 @@ export default function CreateGroup() {
       alert("Please fill in all fields.");
       return;
     }
-    console.log({
-      groupName: groupName,
-      username: username,
-      description: description,
-      password: password,
-      imageURL: imageURL,
-      userDataName: userData.name,
-      userDataUid: userData.uid,
-    });
+
     const groupData = await addDoc(collection(db, "groups"), {
       groupName: groupName,
       username: username,

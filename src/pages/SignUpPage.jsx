@@ -50,7 +50,7 @@ const SignUpPage = () => {
         email,
         joinedGroups: [],
         resourcesShared: 0,
-        sessionsCreated: 0,
+        upcomingSessions: 0,
         totalTodos: 0,
         completedTodos: 0,
         avatar: downloadURL,

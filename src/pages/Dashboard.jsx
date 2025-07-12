@@ -46,7 +46,7 @@ export default function Dashboard() {
       const results = await Promise.all(groupPromises);
       setGroupData(results);
 
-      setSessionsNo(userData.sessionsCreated);
+      setSessionsNo(userData.upcomingSessions);
       setResourcesNo(userData.resourcesShared);
       setTotalTodos(userData.totalTodos);
       setCompletedTodos(userData.completedTodos);
@@ -95,7 +95,7 @@ export default function Dashboard() {
         {/* Summary Cards */}
         <div className="flex gap-6 mb-10">
           <SummaryCard label="Your Groups" value={groupData.length} sign="" />
-          <SummaryCard label="Sessions Created" value={sessionsNo} sign="" />
+          <SummaryCard label="Upcoming Sessions" value={sessionsNo} sign="" />
           <SummaryCard label="Resources Shared" value={resourcesNo} sign="" />
           <SummaryCard
             label="Task Completition Rate"

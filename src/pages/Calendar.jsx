@@ -5,8 +5,8 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import interactionPlugin from "@fullcalendar/interaction";
 import { collectionGroup, doc, getDoc, onSnapshot } from "firebase/firestore";
-import { db } from "./firebase";
-import { useUserData } from "./context/UserDataContext";
+import { db } from "../firebase";
+import { useUserData } from "../context/UserDataContext";
 import tippy from "tippy.js";
 import "tippy.js/dist/tippy.css";
 

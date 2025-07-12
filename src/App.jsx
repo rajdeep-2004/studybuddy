@@ -6,7 +6,7 @@ import CreateGroup from "./pages/CreateGroup.jsx";
 import JoinGroup from "./pages/JoinGroup.jsx";
 import GroupPage from "./pages/GroupPage/GroupPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
-import Calendar from "./Calendar.jsx";
+import Calendar from "./pages/Calendar.jsx";
 import Features from "./pages/Features.jsx";
 
 function App() {

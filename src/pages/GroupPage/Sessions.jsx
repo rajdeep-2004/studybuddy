@@ -10,6 +10,7 @@ import {
   deleteDoc,
   doc,
   updateDoc,
+  getDoc,
 } from "firebase/firestore";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
@@ -27,12 +28,12 @@ export default function Sessions() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [link, setLink] = useState("");
-
+  const [groupMembers, setGroupMembers] = useState(null);
 
   useEffect(() => {
     const q = query(
       collection(db, "groups", groupID, "sessions"),
-      orderBy("createdAt", "desc") // still used, but we sort by date below
+      orderBy("createdAt", "desc")
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -45,6 +46,14 @@ export default function Sessions() {
 
       setSessions(sessionList);
     });
+
+    const getGroupData = async () => {
+      const groupRef = doc(db, "groups", groupID);
+      const groupSnap = await getDoc(groupRef);
+      setGroupMembers(groupSnap.data().members);
+    };
+
+    getGroupData();
 
     return () => unsubscribe();
   }, [groupID]);
@@ -61,7 +70,10 @@ export default function Sessions() {
         date,
         time,
         link,
-        createdBy: currentUser.uid,
+        createdBy: {
+          uid: userData.uid,
+          name: userData.name,
+        },
         createdAt: serverTimestamp(),
       });
 
@@ -71,12 +83,15 @@ export default function Sessions() {
       setLink("");
       setShowForm(false);
 
-      const userRef = doc(db, "users", currentUser.uid);
-      await updateDoc(userRef, {
-        sessionsCreated: userData.sessionsCreated + 1,
-      });
+      for (const member of groupMembers) {
+        const userRef = doc(db, "users", member.uid);
+        const userdata = (await getDoc(userRef)).data();
+        await updateDoc(userRef, {
+          upcomingSessions: userdata.upcomingSessions + 1,
+        });
+      }
     } catch (err) {
-      alert("Failed to create session. Try again.");
+      alert(err.message);
     }
   };
 
@@ -85,6 +100,14 @@ export default function Sessions() {
       const confirmDelete = confirm("Are you sure?");
       if (!confirmDelete) return;
       await deleteDoc(doc(db, `groups/${groupID}/sessions/${sessionID}`));
+
+      for (const member of groupMembers) {
+        const userRef = doc(db, "users", member.uid);
+        const userdata = (await getDoc(userRef)).data();
+        await updateDoc(userRef, {
+          upcomingSessions: userdata.upcomingSessions - 1,
+        });
+      }
     } catch (err) {
       alert(err.message);
     }
@@ -111,7 +134,7 @@ export default function Sessions() {
               <p className="text-gray-600 mb-1">
                 <span className="font-semibold">Date:</span> {session.date}
               </p>
-              <p className="text-gray-600 mb-1">
+              <p className="text-gray-600 ">
                 <span className="font-semibold">Time:</span> {session.time}
               </p>
               {session.link && (
@@ -129,21 +152,23 @@ export default function Sessions() {
                   </a>
                 </p>
               )}
-              <p className="mt-2 text-gray-500">
-                <span className="font-semibold">Created By: </span>
-                {session.createdBy === currentUser.uid
-                  ? "You"
-                  : session.createdBy}
-              </p>
-              {session.createdBy === currentUser.uid ? (
-                <button
-                  className="bg-red-300 rounded-lg px-2 mt-2"
-                  onClick={() => handleDeleteSession(session.id)}
-                >
-                  {" "}
-                  Delete
-                </button>
-              ) : null}
+              <div className="flex justify-between ">
+                <p className="mt-2 text-gray-500">
+                  <span className="font-semibold">Created By: </span>
+                  {session.createdBy.uid === currentUser.uid
+                    ? "You"
+                    : session.createdBy.name}
+                </p>
+                {session.createdBy.uid === currentUser.uid ? (
+                  <button
+                    className="bg-red-300 rounded-lg px-2 mt-2"
+                    onClick={() => handleDeleteSession(session.id)}
+                  >
+                    {" "}
+                    Delete
+                  </button>
+                ) : null}
+              </div>
             </div>
           ))}
         </div>
