@@ -51,6 +51,7 @@ export default function JoinGroup() {
       const userObj = {
         name: userData.name,
         uid: userData.uid,
+        avatar: userData.avatar
       };
       await updateDoc(groupRef, {
         members: arrayUnion(userObj),
@@ -62,10 +63,16 @@ export default function JoinGroup() {
       );
       const todoCount = todosSnapshot.size;
 
+      const sessionsSnapshot = await getDocs(
+        collection(db, "groups", groupDoc.id, "sessions")
+      );
+      const sessionsCount = sessionsSnapshot.size;
+
       const userRef = doc(db, "users", userData.uid);
       await updateDoc(userRef, {
         joinedGroups: arrayUnion(groupDoc.id),
         totalTodos: increment(todoCount),
+        upcomingSessions: increment(sessionsCount)
       });
 
       navigate("/dashboard");
