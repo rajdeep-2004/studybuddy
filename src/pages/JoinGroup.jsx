@@ -8,6 +8,7 @@ import {
   doc,
   updateDoc,
   arrayUnion,
+  increment,
 } from "firebase/firestore";
 import { useUserData } from "../context/UserDataContext.jsx";
 import { useNavigate } from "react-router-dom";
@@ -56,9 +57,15 @@ export default function JoinGroup() {
         memberCount: groupData.memberCount + 1,
       });
 
+      const todosSnapshot = await getDocs(
+        collection(db, "groups", groupDoc.id, "todos")
+      );
+      const todoCount = todosSnapshot.size;
+
       const userRef = doc(db, "users", userData.uid);
       await updateDoc(userRef, {
         joinedGroups: arrayUnion(groupDoc.id),
+        totalTodos: increment(todoCount),
       });
 
       navigate("/dashboard");
