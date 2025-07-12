@@ -59,7 +59,7 @@ const SignUpPage = () => {
       navigate("/dashboard");
     } catch (error) {
       alert(error.message);
-      console.error("Signup error:", error);
+      alert("Signup error:", error);
       setCreate(false);
     }
   };

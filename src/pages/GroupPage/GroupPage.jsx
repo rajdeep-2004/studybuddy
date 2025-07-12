@@ -60,7 +60,7 @@ export default function GroupPage() {
         }
       },
       (err) => {
-        console.error("Error listening to group doc:", err);
+        alert("Error listening to group doc:", err);
         setLoading(false);
       }
     );
@@ -77,7 +77,7 @@ export default function GroupPage() {
         }
       },
       (err) => {
-        console.error("Error listening to session query:", err);
+        alert("Error listening to session query:", err);
       }
     );
 
@@ -94,7 +94,7 @@ export default function GroupPage() {
         }
       },
       (err) => {
-        console.error("Error listening to user membership:", err);
+        alert("Error listening to user membership:", err);
       }
     );
 

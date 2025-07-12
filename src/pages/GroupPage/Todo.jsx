@@ -104,7 +104,7 @@ export default function GroupTodos() {
 
       setNewTodo("");
     } catch (error) {
-      console.error("Error adding todo:", error);
+      alert("Error adding todo:", error);
     }
   };
 
@@ -120,8 +120,6 @@ export default function GroupTodos() {
         userData.uid
       );
 
-
-
       await setDoc(completionRef, {
         completed: completed,
         completedAt: serverTimestamp(),
@@ -132,7 +130,7 @@ export default function GroupTodos() {
         totalTodos: increment(-1),
       });
     } catch (err) {
-      console.error("Error toggling todo completion:", err);
+      alert("Error toggling todo completion:", err);
     }
   };
 
@@ -147,7 +145,7 @@ export default function GroupTodos() {
         });
       }
     } catch (err) {
-      console.error("Error deleting todo:", err);
+      alert("Error deleting todo:", err);
     }
   };
 

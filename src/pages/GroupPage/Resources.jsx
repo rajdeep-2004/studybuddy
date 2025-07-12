@@ -74,7 +74,7 @@ export default function Resources() {
       setFile(null);
       setShowForm(false);
     } catch (err) {
-      console.error("Error uploading file:", err);
+      alert("Error uploading file:", err);
       alert("Upload failed");
     }
 
