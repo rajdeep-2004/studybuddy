@@ -121,7 +121,7 @@ export default function GroupTodos() {
       );
 
       await setDoc(completionRef, {
-        completed: completed,
+        completed: "completed",
         completedAt: serverTimestamp(),
       });
 
