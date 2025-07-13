@@ -134,21 +134,6 @@ export default function GroupTodos() {
     }
   };
 
-  const handleDeleteTodo = async (todoId) => {
-    try {
-      await deleteDoc(doc(db, "groups", groupID, "todos", todoId));
-
-      for (const member of groupMembers) {
-        const userRef = doc(db, "users", member.uid);
-        await updateDoc(userRef, {
-          totalTodos: increment(-1),
-        });
-      }
-    } catch (err) {
-      alert("Error deleting todo:", err);
-    }
-  };
-
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold">Group Todos</h2>
@@ -194,14 +179,6 @@ export default function GroupTodos() {
                   onChange={() => toggleTodoCompletion(todo.id)}
                   className="w-5 h-5"
                 />
-                {todo.createdBy === userData.uid && (
-                  <button
-                    onClick={() => handleDeleteTodo(todo.id)}
-                    className="rounded-lg bg-red-300 px-2 text-sm"
-                  >
-                    Delete
-                  </button>
-                )}
               </div>
             </div>
           )
