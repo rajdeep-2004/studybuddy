@@ -44,14 +44,6 @@ const features = [
     border: "border-red-200",
   },
   {
-    title: "Share Resources",
-    tag: "File Sharing",
-    description:
-      "Upload PDFs, links, and notes — everything is easily accessible to your group members.",
-    color: "bg-pink-50 text-pink-700",
-    border: "border-pink-200",
-  },
-  {
     title: "Group Chat",
     tag: "Real-Time",
     description:
@@ -60,12 +52,12 @@ const features = [
     border: "border-yellow-200",
   },
   {
-    title: "Unique Avatars",
-    tag: "Identity",
+    title: "Share Resources",
+    tag: "File Sharing",
     description:
-      "Every student gets a visually distinct avatar — instantly recognizable inside any group.",
-    color: "bg-cyan-50 text-cyan-700",
-    border: "border-cyan-200",
+      "Upload PDFs, links, and notes — everything is easily accessible to your group members.",
+    color: "bg-pink-50 text-pink-700",
+    border: "border-pink-200",
   },
   {
     title: "Team Members Tab",
@@ -76,20 +68,20 @@ const features = [
     border: "border-teal-200",
   },
   {
-    title: "Group Banner Images",
-    tag: "Customization",
-    description:
-      "Add a cover image to each group — it randomly updates on page reload for a fresh look.",
-    color: "bg-lime-50 text-lime-700",
-    border: "border-lime-200",
-  },
-  {
     title: "Upcoming Sessions",
     tag: "Reminders",
     description:
       "Always stay aware of your next scheduled sessions — never miss a beat.",
     color: "bg-indigo-50 text-indigo-700",
     border: "border-indigo-200",
+  },
+  {
+    title: "Unique Avatars",
+    tag: "Identity",
+    description:
+      "Every student gets a visually distinct avatar — instantly recognizable inside any group.",
+    color: "bg-cyan-50 text-cyan-700",
+    border: "border-cyan-200",
   },
 ];
 
@@ -103,18 +95,23 @@ const FeaturesPage = () => {
           <h1 className="text-4xl md:text-5xl font-bold text-center text-gray-800 mb-12">
             Organized · Collaborative · Productive{" "}
           </h1>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
             {features.map((feature, index) => (
               <div
                 key={index}
-                className={`p-6 rounded-2xl border shadow-sm hover:shadow-md transition duration-300 ${feature.color} ${feature.border}`}
+                className={`relative group p-6 rounded-2xl h-70 border shadow-sm overflow-hidden transition-all duration-300 hover:scale-[1.02] ${feature.color} ${feature.border}`}
               >
-                <p className="inline-block text-sm font-semibold bg-white/70 px-3 py-1 rounded-full mb-3 shadow-sm">
-                  {feature.tag}
-                </p>
-                <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                <p className="text-sm text-gray-700">{feature.description}</p>
+                {/* Glass effect on hover */}
+                <div className="absolute inset-0 bg-white/30 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-2xl pointer-events-none z-0" />
+
+                {/* Card Content */}
+                <div className="relative z-10">
+                  <p className="inline-block text-sm font-semibold bg-white/70 px-3 py-1 rounded-full mb-3 shadow-sm">
+                    {feature.tag}
+                  </p>
+                  <h3 className="text-xl font-bold mb-10">{feature.title}</h3>
+                  <p className="text-sm text-gray-700">{feature.description}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -122,7 +119,7 @@ const FeaturesPage = () => {
           <div className="text-center mt-16">
             <Link to="/signup">
               <button className="bg-[rgb(115,193,253)] border-[rgb(115,193,253)] border-2 text-white px-8 py-3 rounded-lg text-lg  hover:bg-white hover:text-black transition">
-                Start Studying with Us
+                Create Your First Study Group{" "}
               </button>
             </Link>
           </div>
