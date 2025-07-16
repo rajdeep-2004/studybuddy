@@ -1,0 +1,28 @@
+@media (max-width: 768px) {
+  .navbar {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1rem; 
+    overflow-x: hidden;
+  }
+
+  .logo {
+    /* optional styles */
+  }
+
+  .navlinks {
+
+  }
+
+  .navlinks:hover {
+    color: rgb(109, 194, 254);
+  }
+
+  .cta {
+    display: none;
+  }
+
+  .contact{
+    margin-right: 0px;
+  }
+}

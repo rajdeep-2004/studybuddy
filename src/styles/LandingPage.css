@@ -1,0 +1,31 @@
+@media (max-width: 768px) {
+  .banner {
+    flex-direction: column-reverse;
+    align-items: center; /* Center image & text */
+    text-align: center; /* Optional: center text */
+    overflow-x: hidden; /* Prevent horizontal scroll */
+  }
+
+  .banner-image {
+    margin-top: 0px;
+    width: 100%;
+    max-width: 90vw;
+    margin-right: 0;
+  }
+
+  .content {
+    font-size: 60px;
+    padding: 0 16px;
+    margin: 0px;
+    width: 100vw;
+  }
+
+  .login {
+    display: block; 
+  }
+
+  .lp-cta {
+    justify-content: center;
+    margin-right: 70px;
+  }
+}

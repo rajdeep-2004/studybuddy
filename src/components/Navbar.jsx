@@ -1,3 +1,4 @@
+
 import "../index.css";
 import { Link, useLocation } from "react-router-dom";
 
@@ -8,9 +9,9 @@ function Navbar() {
   const isActive = (path) => currentPath === path;
 
   return (
-    <nav className="sticky top-0 z-10 backdrop-blur-lg bg-opacity-10 border-b border-gray-200 flex items-center justify-between px-10 py-4">
+    <nav className="sticky top-0 z-10 backdrop-blur-lg bg-opacity-10 border-b border-gray-200 flex items-center justify-between px-10 py-4 navbar">
       {/* Logo */}
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 logo">
         <Link to="/">
           <img src="/logo.png" alt="Study Buddy Logo" className="h-8 w-auto" />
         </Link>
@@ -18,7 +19,7 @@ function Navbar() {
 
       {/* Navigation Links */}
 
-      <div className="flex items-center space-x-8">
+      <div className="flex items-center space-x-8 navlinks">
         <Link to="/">
           <p
             className={`${
@@ -47,14 +48,14 @@ function Navbar() {
           href="https://www.linkedin.com/in/rajdeepsanyal"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-black hover:text-[rgb(109,191,254)] transition"
+          className="text-black hover:text-[rgb(109,191,254)] transition contact"
         >
           Contact
         </a>
         {isActive("/signup") ? null : (
           <Link to="/signup">
             <button
-              className={`bg-[rgb(109,191,254)] border-2 border-[rgb(109,191,254)] text-white px-5 py-2 rounded-full hover:bg-white hover:text-black transition font-medium`}
+              className={`bg-[rgb(109,191,254)] border-2 border-[rgb(109,191,254)] text-white px-5 py-2 rounded-full hover:bg-white hover:text-black transition font-medium cta`}
             >
               Get Started Free
             </button>
@@ -62,7 +63,7 @@ function Navbar() {
         )}
 
         <Link to="/login">
-          <button className="border border-gray-300 text-gray-700 px-5 py-2 rounded-full hover:bg-gray-100 transition font-medium">
+          <button className="border border-gray-300 text-gray-700 px-5 py-2 rounded-full hover:bg-gray-100 transition font-medium cta">
             Log In
           </button>
         </Link>
