@@ -59,10 +59,10 @@ Built with love using modern tools:
 ## Screenshots
 
 ### Personal Dashboard
-![Personal Dashboard](/dashboardUI.png)
+![Personal Dashboard](/public/dashboardUI.png)
 
 ### Group Dashboard
-![Group Dashboard](/groupUI.png)
+![Group Dashboard](/public/groupUI.png)
 
 
 ## License
