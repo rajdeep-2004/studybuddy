@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useNavigate, Link } from "react-router";
 import Navbar from "../components/Navbar.jsx";
+import "../styles/LoginPage.css"
 
 const LoginPage = () => {
   const { login } = useAuth();
@@ -30,17 +31,17 @@ const LoginPage = () => {
 
       {/* Login Section */}
       <section>
-        <div className="flex justify-between">
+        <div className="flex justify-between loginpage">
           {/* Left side Image */}
           <img
-            className="h-232 w-250 mr-0"
+            className="h-232 w-250 mr-0 signup-img"
             src="/signup.jpg"
             alt="LoginImage"
           />
 
           {/* Right side form */}
-          <div className="w-1/2 flex items-center justify-center bg-white p-12">
-            <div className="w-full max-w-xl">
+          <div className="w-1/2 flex items-center justify-center bg-white p-12 login-form">
+            <div className="w-full max-w-xl ">
               <h1 className="text-4xl font-bold text-[rgb(109,191,254)] mb-3">
                 Welcome Back
               </h1>

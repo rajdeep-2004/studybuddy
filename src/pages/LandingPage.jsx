@@ -23,7 +23,7 @@ function LandingPage() {
                 </button>
               </Link>
               <Link to="/login">
-                <button className="px-4 py-2 rounded-lg text-gray-700 font-semibold w-50 ml-15 mt-20  border-2 hidden border-gray-300 hover:bg-gray-100 transition  login">
+                <button className="px-4 py-2 rounded-lg text-gray-700 font-semibold w-50 ml-15 mt-20  border-2 hidden border-gray-300 hover:bg-gray-100 transition  login-cta">
                   Login
                 </button>
               </Link>
