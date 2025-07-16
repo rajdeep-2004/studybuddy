@@ -1,9 +1,11 @@
 import { useAuth } from "../context/AuthContext.jsx";
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import "../styles/Sidebar.css";
+import { HiOutlineMenu, HiX } from "react-icons/hi";
 
 function SidebarItem({ icon, label }) {
-  const iconPath = `/${icon}`; // Dynamic path for icons
-
+  const iconPath = `/${icon}`;
   return (
     <div className="flex items-center gap-3 hover:bg-[#f5f6f8] rounded-lg px-4 py-2 cursor-pointer transition">
       <img src={iconPath} alt={label} className="h-5 w-5" />
@@ -12,10 +14,10 @@ function SidebarItem({ icon, label }) {
   );
 }
 
-const SideBar = () => {
-  const logoPath = `/logo.png`;
+const Sidebar = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -26,12 +28,12 @@ const SideBar = () => {
     }
   };
 
-  return (
-    <div className="w-64 bg-white shadow-lg flex flex-col justify-between p-6">
+  const SidebarContent = () => (
+    <>
       {/* Logo */}
       <div>
         <div className="h-16 flex items-center pl-1 mb-10">
-          <img src={logoPath} alt="Study Buddy Logo" className="h-8 w-auto" />
+          <img src="/logo.png" alt="Study Buddy Logo" className="h-8 w-auto" />
         </div>
 
         {/* Navigation */}
@@ -42,14 +44,16 @@ const SideBar = () => {
           <Link to={"/join-group"}>
             <SidebarItem icon="plusicon.png" label="Join a Group" />
           </Link>
-
           <Link to="/create-group">
             <SidebarItem icon="plusicon.png" label="Create a Group" />
           </Link>
           <Link to="/calendar">
             <SidebarItem icon="calendaricon.png" label="Calendar" />
           </Link>
-          <button className="w-52" onClick={()=>alert("Profile Page Coming in V2")}>
+          <button
+            className="w-52"
+            onClick={() => alert("Profile Page Coming in V2")}
+          >
             <SidebarItem icon="profileicon.png" label="Profile" />
           </button>
         </nav>
@@ -59,8 +63,37 @@ const SideBar = () => {
       <button className="space-y-2" onClick={handleLogout}>
         <SidebarItem icon="logouticon.png" label="Logout" />
       </button>
-    </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* ✅ Hamburger icon (mobile only) */}
+      <div className="hamburger-icon" onClick={() => setSidebarOpen(true)}>
+        {sidebarOpen ? null : (
+          <HiOutlineMenu className="h-6 w-6 text-gray-800" />
+        )}
+      </div>
+
+      {/* ✅ Desktop Sidebar */}
+      <div className="sidebar">
+        <SidebarContent />
+      </div>
+
+      {/* ✅ Mobile Sidebar (slide-in) */}
+      {sidebarOpen && (
+        <>
+          <div
+            className="mobile-overlay"
+            onClick={() => setSidebarOpen(false)}
+          />
+          <div className="mobile-menu open">
+            <SidebarContent />
+          </div>
+        </>
+      )}
+    </>
   );
 };
 
-export default SideBar;
+export default Sidebar;

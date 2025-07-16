@@ -1,0 +1,31 @@
+/* Dashboard.css (Only for max-width: 768px) */
+
+@media (max-width: 768px) {
+  .dashboard-wrapper {
+    flex-direction: column;
+  }
+
+  .dashboard-main {
+    padding: 1rem;
+  }
+  .group {
+    width: 100%; /* ✅ Let the grid container control the size */
+  }
+
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .group-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+  }
+
+  .group-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

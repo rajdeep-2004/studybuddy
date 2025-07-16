@@ -36,9 +36,14 @@ export default function GroupPage() {
   const [groupDesc, setGroupDesc] = useState("");
   const [nextSession, setNextSession] = useState(null);
   const [imgLoaded, setImgLoaded] = useState(false);
+  const [imgSrc, setImgSrc] = useState(`https://picsum.photos/1465/288`);
 
   useEffect(() => {
     if (!userData?.uid) return;
+
+    if (window.innerWidth <= 768) {
+      setImgSrc("https://picsum.photos/500/300");
+    }
 
     const groupRef = doc(db, "groups", groupID);
     const sessionsQuery = query(
@@ -265,7 +270,7 @@ export default function GroupPage() {
           ) : null}
 
           <img
-            src="https://picsum.photos/1465/288"
+            src={imgSrc}
             alt="Group Banner"
             onLoad={() => setImgLoaded(true)}
             className={`object-cover w-full h-full rounded-xl transition-opacity duration-500 ${

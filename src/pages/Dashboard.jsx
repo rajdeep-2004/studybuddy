@@ -1,11 +1,12 @@
-import React, { use, useEffect, useState } from "react";
+// import section unchanged
+import React, { useEffect, useState } from "react";
 import { useUserData } from "../context/UserDataContext";
-import { doc, getDocs, collection, getDoc, query } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { Link } from "react-router-dom";
 import SideBar from "../components/SideBar";
+import "../styles/Dashboard.css"; 
 
-/** Reusable Summary Card */
 function SummaryCard({ label, value, sign }) {
   return (
     <div className="flex-1 bg-white border border-gray-200 rounded-xl p-6 flex flex-col justify-center shadow-sm">
@@ -68,47 +69,37 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar */}
+    <div className="flex min-h-screen bg-gray-50 dashboard-wrapper">
       <SideBar />
 
-      {/* Main Content */}
-      <div className="flex-1 px-10 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex justify-between">
-            <div>
-              <h1 className="text-3xl font-bold mb-1">
-                Welcome back, {firstName}!
-              </h1>
-              <p className="text-gray-600">
-                Ready to crush your study goals today?
-              </p>
-            </div>
-
-            <img src={userData.avatar} className="h-15"></img>
+      <div className="flex-1 px-10 py-8 dashboard-main">
+        <div className="mb-8 flex justify-between dashboard-header">
+          <div>
+            <h1 className="text-3xl font-bold mb-1">
+              Welcome back, {firstName}!
+            </h1>
+            <p className="text-gray-600">
+              Ready to crush your study goals today?
+            </p>
           </div>
+
+          <img src={userData.avatar} className="h-15" />
         </div>
 
-        {/* Summary Cards */}
-        <div className="flex gap-6 mb-10">
+        <div className="flex gap-6 mb-10 summary-cards">
           <SummaryCard label="Your Groups" value={groupData.length} sign="" />
           <SummaryCard label="Upcoming Sessions" value={sessionsNo} sign="" />
           <SummaryCard label="Resources Shared" value={resourcesNo} sign="" />
           <SummaryCard label="Task Left" value={totalTodos} sign="" />
         </div>
 
-        {/* Your Groups */}
         <div className="mb-10">
           <h2 className="text-2xl font-semibold mb-4">Your Groups</h2>
           {groupData.length > 0 ? (
-            <div className="grid grid-cols-4 gap-6">
+            <div className="grid grid-cols-4 gap-6 group-grid">
               {groupData.map((group, i) => (
-                <Link to={"/group/" + group.id}>
-                  <div
-                    key={i}
-                    className="bg-white rounded-xl shadow hover:scale-105 transition p-4 flex flex-col"
-                  >
+                <Link to={"/group/" + group.id} key={i} className="group">
+                  <div className="bg-white rounded-xl shadow hover:scale-105 transition p-4 flex flex-col ">
                     <img
                       src={group.imageURL}
                       alt={group.groupName}
@@ -125,17 +116,15 @@ export default function Dashboard() {
           ) : (
             <>
               <div className="text-gray-600 italic mb-2">
-                No joined groups.{" "}
+                No joined groups.
               </div>
-              <div className="flex gap-1">
+              <div className="flex gap-1 group-actions">
                 <Link to={"/create-group"}>
-                  {" "}
                   <button className="bg-[rgb(109,191,254)] border-2 border-[rgb(109,191,254)] text-white px-5 py-2 rounded-lg hover:bg-white hover:text-black transition">
                     Create Group
                   </button>
                 </Link>
                 <Link to={"/join-group"}>
-                  {" "}
                   <button className="bg-[rgb(109,191,254)] border-2 border-[rgb(109,191,254)] text-white px-5 py-2 rounded-lg hover:bg-white hover:text-black transition">
                     Join Group
                   </button>
