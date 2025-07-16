@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import "../styles/Features.css"
 
 const features = [
   {
@@ -92,10 +93,10 @@ const FeaturesPage = () => {
 
       <div className="px-6 py-16">
         <div className=" mx-auto">
-          <h1 className="text-4xl md:text-5xl font-bold text-center text-gray-800 mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-center text-gray-800 mb-12 features-text">
             Organized · Collaborative · Productive{" "}
           </h1>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+          <div className="grid grid-cols-5 gap-8 features">
             {features.map((feature, index) => (
               <div
                 key={index}
