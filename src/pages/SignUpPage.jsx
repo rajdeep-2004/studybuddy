@@ -5,6 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { doc, setDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Navbar from "../components/Navbar.jsx";
+import "../styles/SignUpPage.css"
 
 const SignUpPage = () => {
   const { signup } = useAuth();
@@ -71,17 +72,17 @@ const SignUpPage = () => {
 
       {/* Sign Up Section */}
       <section>
-        <div className="flex justify-between">
+        <div className="flex justify-between signup">
           {/* Left side Image */}
           <img
-            className="h-232 w-250 mr-0"
+            className="h-232 w-250 mr-0 signup-img"
             src="/signup.jpg"
             alt="SignUpImage"
           />
 
           {/* Right side form */}
-          <div className="w-1/2 flex items-center justify-center bg-white p-12">
-            <div className="w-full max-w-xl">
+          <div className="w-1/2 flex items-center justify-center bg-white p-12 signup-form">
+            <div className="w-full max-w-xl ">
               <h1 className="text-4xl font-bold text-[rgb(109,191,254)] mb-3">
                 Student Sign Up
               </h1>
