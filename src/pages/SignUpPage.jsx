@@ -27,7 +27,7 @@ const SignUpPage = () => {
       const userCredentials = await signup(email, password);
       const uid = userCredentials.user.uid;
 
-      // Step 1: Fetch avatar from API as blob
+      // fetch avatar from API as blob
       const avatarURL =
         gender === "male"
           ? "https://avatar.iran.liara.run/public/boy"
@@ -36,7 +36,7 @@ const SignUpPage = () => {
       const response = await fetch(avatarURL);
       const blob = await response.blob();
 
-      // Step 2: Upload avatar to Firebase Storage
+      // upload avatar to firebase storage
       const fileRef = ref(
         storage,
         `studybuddy/users/avatars/${uid}/${name}.png`
@@ -44,7 +44,7 @@ const SignUpPage = () => {
       await uploadBytes(fileRef, blob);
       const downloadURL = await getDownloadURL(fileRef);
 
-      // Step 3: Store user data with avatar URL in Firestore
+      // store user data with avatar url in firestore
       await setDoc(doc(db, "users", uid), {
         uid,
         name,

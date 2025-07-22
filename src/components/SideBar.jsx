@@ -50,12 +50,6 @@ const Sidebar = () => {
           <Link to="/calendar">
             <SidebarItem icon="calendaricon.png" label="Calendar" />
           </Link>
-          <button
-            className="w-52"
-            onClick={() => alert("Profile Page Coming in V2")}
-          >
-            <SidebarItem icon="profileicon.png" label="Profile" />
-          </button>
         </nav>
       </div>
 
@@ -68,19 +62,19 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* ✅ Hamburger icon (mobile only) */}
+
       <div className="hamburger-icon" onClick={() => setSidebarOpen(true)}>
         {sidebarOpen ? null : (
           <HiOutlineMenu className="h-6 w-6 text-gray-800" />
         )}
       </div>
 
-      {/* ✅ Desktop Sidebar */}
+
       <div className="sidebar">
         <SidebarContent />
       </div>
 
-      {/* ✅ Mobile Sidebar (slide-in) */}
+
       {sidebarOpen && (
         <>
           <div

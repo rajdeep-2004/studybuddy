@@ -102,7 +102,7 @@ const FeaturesPage = () => {
                 key={index}
                 className={`relative group p-6 rounded-2xl h-70 border shadow-sm overflow-hidden transition-all duration-300 hover:scale-[1.02] ${feature.color} ${feature.border}`}
               >
-                {/* Glass effect on hover */}
+
                 <div className="absolute inset-0 bg-white/30 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-2xl pointer-events-none z-0" />
 
                 {/* Card Content */}

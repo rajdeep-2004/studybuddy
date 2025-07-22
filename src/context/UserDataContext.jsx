@@ -28,8 +28,8 @@ export const UserDataProvider = ({ children }) => {
       setLoading(false); 
     });
 
-    return () => unsubscribe(); // Clean up when component unmounts
-  }, [currentUser]); // whenever currentUser changes, re-run the effect
+    return () => unsubscribe(); 
+  }, [currentUser]);
 
   return (
     <UserDataContext.Provider value={{ userData}}>

@@ -11,12 +11,12 @@ import tippy from "tippy.js";
 import "tippy.js/dist/tippy.css";
 
 const GROUP_COLORS = [
-  "#2563EB", // blue-600
-  "#10B981", // green-500
-  "#F59E0B", // yellow-500
-  "#EF4444", // red-500
-  "#8B5CF6", // purple-500
-  "#F43F5E", // rose-500
+  "#2563EB", 
+  "#10B981", 
+  "#F59E0B", 
+  "#EF4444",
+  "#8B5CF6", 
+  "#F43F5E",
 ];
 
 export default function CalendarPage() {

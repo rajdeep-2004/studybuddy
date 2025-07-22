@@ -70,7 +70,7 @@ export default function GroupPage() {
       }
     );
 
-    // Next Session
+
     const unsubscribeSession = onSnapshot(
       sessionsQuery,
       (snapshot) => {
@@ -78,7 +78,7 @@ export default function GroupPage() {
           const session = snapshot.docs[0].data();
           setNextSession(session);
         } else {
-          setNextSession(null); // In case all sessions are deleted
+          setNextSession(null); 
         }
       },
       (err) => {
