@@ -17,6 +17,7 @@ export default function JoinGroup() {
   const [groupName, setGroupName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [login, setLogin] = useState(false);
   const { userData } = useUserData();
   const navigate = useNavigate();
 
@@ -32,7 +33,9 @@ export default function JoinGroup() {
         where("groupName", "==", groupName),
         where("username", "==", username)
       );
+
       const snapshot = await getDocs(q);
+
 
       if (snapshot.empty) {
         alert("No group found with that name and username.");
@@ -41,6 +44,7 @@ export default function JoinGroup() {
 
       const groupDoc = snapshot.docs[0];
       const groupData = groupDoc.data();
+
 
       if (groupData.password !== password) {
         alert("Incorrect password.");
@@ -75,6 +79,7 @@ export default function JoinGroup() {
         upcomingSessions: increment(sessionsCount)
       });
 
+      setLogin(false)
       navigate("/dashboard");
     } catch (err) {
       alert(err.message);
@@ -125,7 +130,7 @@ export default function JoinGroup() {
               onClick={handleJoinGroup}
               className="bg-[rgb(109,191,254)] border-2 border-[rgb(109,191,254)] text-white px-5 py-2 rounded-lg hover:bg-white hover:text-black transition"
             >
-              Join Group
+              {login ? "Joining" : "Join Group"}
             </button>
           </div>
         </div>

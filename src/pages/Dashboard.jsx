@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import SideBar from "../components/SideBar";
 import "../styles/Dashboard.css"; 
 
-function SummaryCard({ label, value, sign }) {
+function SummaryCard({ label, value, }) {
   return (
     <div className="flex-1 bg-white border border-gray-200 rounded-xl p-6 flex flex-col justify-center shadow-sm">
       <div className="text-lg font-medium text-gray-700 flex items-center gap-2">
@@ -15,7 +15,6 @@ function SummaryCard({ label, value, sign }) {
       </div>
       <div className="text-3xl font-semibold text-black">
         {value}
-        <span className="text-3xl font-semibold text-black">{sign}</span>
       </div>
     </div>
   );
@@ -87,10 +86,10 @@ export default function Dashboard() {
         </div>
 
         <div className="flex gap-6 mb-10 summary-cards">
-          <SummaryCard label="Your Groups" value={groupData.length} sign="" />
-          <SummaryCard label="Upcoming Sessions" value={sessionsNo} sign="" />
-          <SummaryCard label="Resources Shared" value={resourcesNo} sign="" />
-          <SummaryCard label="Task Left" value={totalTodos} sign="" />
+          <SummaryCard label="Your Groups" value={groupData.length} />
+          <SummaryCard label="Upcoming Sessions" value={sessionsNo} />
+          <SummaryCard label="Resources Shared" value={resourcesNo} />
+          <SummaryCard label="Task Left" value={totalTodos} />
         </div>
 
         <div className="mb-10">
@@ -107,7 +106,7 @@ export default function Dashboard() {
                     />
                     <div className="font-semibold mb-1">{group.groupName}</div>
                     <div className="text-sm text-gray-600">
-                      {group.description || "No description."}
+                      {group.description}
                     </div>
                   </div>
                 </Link>

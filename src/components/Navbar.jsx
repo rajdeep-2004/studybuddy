@@ -15,7 +15,7 @@ function Navbar() {
         <Link to="/">
           <img src="/logo.png" alt="Study Buddy Logo" className="h-8 w-auto" />
         </Link>
-      </div>
+      </div> 
 
       {/* Navigation Links */}
 

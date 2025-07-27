@@ -1,5 +1,3 @@
-/* Dashboard.css (Only for max-width: 768px) */
-
 @media (max-width: 768px) {
   .dashboard-wrapper {
     flex-direction: column;
@@ -9,7 +7,7 @@
     padding: 1rem;
   }
   .group {
-    width: 100%; /* ✅ Let the grid container control the size */
+    width: 100%;
   }
 
   .summary-cards {

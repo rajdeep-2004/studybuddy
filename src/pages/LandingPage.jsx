@@ -5,10 +5,10 @@ import "../styles/LandingPage.css";
 function LandingPage() {
   return (
     <>
-      {/* Navbar */}
+
       <Navbar />
 
-      {/* Banner and CTA */}
+
 
       <section>
         <div className="flex justify-between banner">

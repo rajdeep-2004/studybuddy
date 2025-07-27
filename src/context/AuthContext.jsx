@@ -11,7 +11,7 @@ import { app } from "../firebase.jsx";
 const AuthContext = createContext();
 const auth = getAuth(app);
 
-export const useAuth = () => useContext(AuthContext);  // Auth Context
+export const useAuth = () => useContext(AuthContext);  
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
       setCurrentUser(user);
     });
 
-    return () => unsubscribe();  // Clean up when component unmounts
+    return () => unsubscribe();  
   }, []);
 
   const signup = (email, password) => {

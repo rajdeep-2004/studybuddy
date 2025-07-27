@@ -2,7 +2,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import "../styles/Sidebar.css";
-import { HiOutlineMenu, HiX } from "react-icons/hi";
+import { HiOutlineMenu } from "react-icons/hi";
 
 function SidebarItem({ icon, label }) {
   const iconPath = `/${icon}`;

@@ -174,7 +174,7 @@ export default function Sessions() {
         </div>
       )}
 
-      {/* Create Button */}
+      {/* create button */}
       {!showForm && (
         <div>
           <button
@@ -186,7 +186,7 @@ export default function Sessions() {
         </div>
       )}
 
-      {/* Create New Session Form */}
+      {/* new session form */}
       {showForm && (
         <div className="bg-white p-6 rounded-lg shadow mt-4">
           <h3 className="text-lg font-semibold mb-4">New Session Details</h3>

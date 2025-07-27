@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
-  collection,
   doc,
   getDoc,
-  getDocs,
   updateDoc,
   onSnapshot,
 } from "firebase/firestore";
@@ -64,7 +62,7 @@ export default function Members() {
       ) : (
         <div className="grid lg:grid-cols-4 gap-4">
           {members.map((mem) => {
-            const { bg, border } = getRandomColorCombo(mem.uid);
+            const { bg, border } = getRandomColorCombo();
             return (
               <div
                 key={mem.uid}

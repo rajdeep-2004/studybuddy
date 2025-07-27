@@ -110,7 +110,7 @@ export default function Resources() {
       ) : (
         <div className="grid lg:grid-cols-4 gap-4">
           {resources.map((res) => {
-            const { bg, text, border } = getRandomColorCombo(res.id);
+            const { bg, border } = getRandomColorCombo();
 
             return (
               <div

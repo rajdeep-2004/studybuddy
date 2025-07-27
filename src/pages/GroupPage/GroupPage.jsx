@@ -9,7 +9,6 @@ import {
   query,
   orderBy,
   limit,
-  getDocs,
   onSnapshot,
 } from "firebase/firestore";
 import { useAuth } from "../../context/AuthContext.jsx";
@@ -49,7 +48,7 @@ export default function GroupPage() {
     const sessionsQuery = query(
       collection(db, "groups", groupID, "sessions"),
       orderBy("date"),
-      limit(1)
+      limit(1) 
     );
     const userRef = doc(db, "users", userData.uid);
 
@@ -86,7 +85,7 @@ export default function GroupPage() {
       }
     );
 
-    // Checks whether current User is a member
+    // checks whether current user is a member
     const unsubscribeUser = onSnapshot(
       userRef,
       (docSnap) => {
@@ -99,7 +98,7 @@ export default function GroupPage() {
         }
       },
       (err) => {
-        alert("Error listening to user membership:", err);
+        alert(err);
       }
     );
 

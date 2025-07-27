@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { db, storage } from "../firebase.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { doc, setDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Navbar from "../components/Navbar.jsx";
@@ -34,7 +34,7 @@ const SignUpPage = () => {
           : "https://avatar.iran.liara.run/public/girl";
 
       const response = await fetch(avatarURL);
-      const blob = await response.blob();
+      const blob = await response.blob(); // coverting the response to binary large object (blob)
 
       // upload avatar to firebase storage
       const fileRef = ref(
@@ -144,7 +144,7 @@ const SignUpPage = () => {
                 className="w-full bg-[rgb(173,216,255)] border-2 border-[rgb(173,216,255)] text-white font-semibold text-lg py-4 rounded-xl transition hover:text-black hover:bg-white"
                 onClick={handleSignup}
               >
-                {create ? "Creating..." : "Sign Up"}
+                {create ? "Creating Account..." : "Sign Up"}
               </button>
             </div>
           </div>

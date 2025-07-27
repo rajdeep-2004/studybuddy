@@ -1,9 +1,9 @@
 @media (max-width: 768px) {
   .banner {
     flex-direction: column-reverse;
-    align-items: center; /* Center image & text */
-    text-align: center; /* Optional: center text */
-    overflow-x: hidden; /* Prevent horizontal scroll */
+    align-items: center; 
+    text-align: center;
+    overflow-x: hidden; 
   }
 
   .banner-image {

@@ -21,7 +21,7 @@ const LoginPage = () => {
       .catch((error) => {
         alert(error.message);
         setSignin(false);
-      });
+      }); 
   }
 
   return (

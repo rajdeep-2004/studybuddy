@@ -83,7 +83,7 @@ const features = [
       "Every student gets a visually distinct avatar — instantly recognizable inside any group.",
     color: "bg-cyan-50 text-cyan-700",
     border: "border-cyan-200",
-  },
+  }, 
 ];
 
 const FeaturesPage = () => {

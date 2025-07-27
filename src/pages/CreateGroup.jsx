@@ -9,7 +9,7 @@ import {
 } from "firebase/firestore";
 import { useUserData } from "../context/UserDataContext.jsx";
 import { useNavigate } from "react-router-dom";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 export default function CreateGroup() {
   const [groupName, setGroupName] = useState("");
@@ -17,6 +17,7 @@ export default function CreateGroup() {
   const [description, setDescription] = useState("");
   const [password, setPassword] = useState("");
   const [imageURL, setImageURL] = useState("");
+  const [create, setCreate] = useState(false);
   const { userData } = useUserData();
   const navigate = useNavigate();
 
@@ -63,6 +64,7 @@ export default function CreateGroup() {
       joinedGroups: arrayUnion(groupData.id),
     });
 
+    setCreate(false)
     navigate("/dashboard");
   };
 
@@ -81,7 +83,7 @@ export default function CreateGroup() {
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
               placeholder="e.g., WAP 101"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[rgb(109,191,254)]"
             />
           </div>
 
@@ -92,7 +94,7 @@ export default function CreateGroup() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="e.g., wap-section-b"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[rgb(109,191,254)]"
             />
           </div>
 
@@ -103,7 +105,7 @@ export default function CreateGroup() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Briefly describe your group's focus and goals."
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[rgb(109,191,254)]"
             />
           </div>
 
@@ -114,7 +116,7 @@ export default function CreateGroup() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Set a group password"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[rgb(109,191,254)]"
             />
           </div>
 
@@ -126,7 +128,7 @@ export default function CreateGroup() {
               type="file"
               accept="image/*"
               onChange={(e) => handleuploadImage(e.target.files[0])}
-              className="w-full text-sm text-gray-500 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full text-sm text-gray-500 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[rgb(109,191,254)]"
             />
           </div>
 
@@ -135,7 +137,7 @@ export default function CreateGroup() {
               onClick={handleCreateGroup}
               className="bg-[rgb(109,191,254)] border-2 border-[rgb(109,191,254)] text-white px-5 py-2 rounded-lg hover:bg-white hover:text-black transition"
             >
-              Create Group
+              {create ? "Creating Group..." : "Create Group"}
             </button>
           </div>
         </div>

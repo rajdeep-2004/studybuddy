@@ -7,7 +7,6 @@ import {
   orderBy,
   onSnapshot,
   setDoc,
-  deleteDoc,
   serverTimestamp,
   getDoc,
   updateDoc,
@@ -85,7 +84,7 @@ export default function GroupTodos() {
   }, [groupID, currentUser.uid]);
 
   const handleCreateTodo = async () => {
-    if (!newTodo.trim()) return;
+c
 
     try {
       await addDoc(collection(db, "groups", groupID, "todos"), {
