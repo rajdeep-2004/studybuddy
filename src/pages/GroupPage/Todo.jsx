@@ -84,7 +84,6 @@ export default function GroupTodos() {
   }, [groupID, currentUser.uid]);
 
   const handleCreateTodo = async () => {
-c
 
     try {
       await addDoc(collection(db, "groups", groupID, "todos"), {
