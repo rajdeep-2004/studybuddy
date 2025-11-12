@@ -11,7 +11,7 @@ const Dashboard = () => {
         return;
       }
       try {
-        const res = await fetch("http://localhost:3000/dashboard", {
+        const res = await fetch("https://study-buddy-v2-backend.onrender.com/dashboard", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
