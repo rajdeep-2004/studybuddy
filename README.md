@@ -51,7 +51,7 @@ Built with love using modern tools:
 
 - **Frontend**: ReactJS, Tailwind CSS
 - **Routing**: React Router DOM
-- **Backend / DB**: Firebase (Auth, Firestore, Storage)
+- **Backend / DB**: Express JS, MongoDB
 - **Calendar**: React Big Calendar
 
 ---
