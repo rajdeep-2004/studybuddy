@@ -25,7 +25,7 @@ const SignUp = () => {
       setLoading(false);
       if (res.ok) {
         alert("Account created successfully!");
-        navigate("/dashboard");
+        navigate("/login");
       } else {
         alert(data.message || "Signup failed. Try again.");
       }
