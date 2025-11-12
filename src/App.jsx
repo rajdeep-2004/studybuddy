@@ -1,32 +1,23 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import LandingPage from "./pages/LandingPage";
-import SignUpPage from "./pages/SignUpPage.jsx";
-import Dashboard from "./pages/Dashboard.jsx";
-import CreateGroup from "./pages/CreateGroup.jsx";
-import JoinGroup from "./pages/JoinGroup.jsx";
-import GroupPage from "./pages/GroupPage/GroupPage.jsx";
-import LoginPage from "./pages/LoginPage.jsx";
-import Calendar from "./pages/Calendar.jsx";
-import Features from "./pages/Features.jsx";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import SignUp from "./pages/SignUpPage";
+import Login from "./pages/LoginPage";
+import Dashboard from "./pages/Dashboard";
 
-function App() {
-  return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/create-group" element={<CreateGroup />} />
-          <Route path="/join-group" element={<JoinGroup />} />
-          <Route path="/group/:groupID" element={<GroupPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/calendar" element={<Calendar />} />
-          <Route path="/features" element={<Features />} />
-        </Routes>
-      </BrowserRouter>
-    </>
-  );
+function PrivateRoute({ children }) {
+  const token = localStorage.getItem("token");
+  return token ? children : <Navigate to="/login" />;
 }
 
-export default App;
+export default function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate to="/signup" />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<PrivateRoute><Dashboard/></PrivateRoute>} />
+      </Routes>
+    </Router>
+  );
+}
