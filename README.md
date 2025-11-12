@@ -1,6 +1,7 @@
 # StudyBuddy — Your Ultimate Study Partner 
 
-Project Link : https://github.com/rajdeep-2004/studybuddy
+Frontend : studybuddy-ky6h.vercel.app/
+Backend: https://study-buddy-v2-backend1.onrender.com/
 
 _Real-time study group collaboration platform built to boost productivity, accountability, and student success._
 
