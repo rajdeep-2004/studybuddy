@@ -1,5 +1,7 @@
 # StudyBuddy — Your Ultimate Study Partner 
 
+Project Link : https://github.com/rajdeep-2004/studybuddy
+
 _Real-time study group collaboration platform built to boost productivity, accountability, and student success._
 
 **StudyBuddy** lets students create or join focused study groups, schedule sessions, manage tasks, share learning resources, and communicate seamlessly — all in one powerful and clean interface.
