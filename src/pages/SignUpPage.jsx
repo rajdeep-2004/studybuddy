@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar.jsx";
 import "../styles/SignUpPage.css";
 import { registerUser } from "../api";
+import Dashboard from "./Dashboard.jsx";
 
 const SignUp = () => {
   const navigate = useNavigate();

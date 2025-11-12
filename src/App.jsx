@@ -8,7 +8,7 @@ import Features from "./pages/Features"
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
-  return token ? children : <Navigate to="/login" />;
+  return token ? children : <Navigate to="/dashboard" />;
 }
 
 export default function App() {
