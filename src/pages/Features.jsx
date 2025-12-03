@@ -44,14 +44,7 @@ const features = [
     color: "bg-red-50 text-red-700",
     border: "border-red-200",
   },
-  {
-    title: "Group Chat",
-    tag: "Real-Time",
-    description:
-      "Communicate with group members in real-time using our built-in group chat (beta version).",
-    color: "bg-yellow-50 text-yellow-700",
-    border: "border-yellow-200",
-  },
+
   {
     title: "Share Resources",
     tag: "File Sharing",

@@ -1,15 +1,7 @@
 import React, { useState } from "react";
-import { db, storage } from "../firebase.jsx";
-import {
-  collection,
-  addDoc,
-  updateDoc,
-  doc,
-  arrayUnion,
-} from "firebase/firestore";
-import { useUserData } from "../context/UserDataContext.jsx";
+import api from "../api/axios";
+import { useUserData } from "../context/UserDataContext";
 import { useNavigate } from "react-router-dom";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 export default function CreateGroup() {
   const [groupName, setGroupName] = useState("");
@@ -22,13 +14,14 @@ export default function CreateGroup() {
   const navigate = useNavigate();
 
   const handleuploadImage = async (file) => {
-    const fileRef = ref(
-      storage,
-      `studybuddy/groupImg/${username}/${file.name}`
-    );
+    const formData = new FormData();
+    formData.append("file", file);
+
     try {
-      await uploadBytes(fileRef, file);
-      setImageURL(await getDownloadURL(fileRef));
+      const res = await api.post("/groups/upload-image", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setImageURL(res.data.url);
     } catch (error) {
       alert("Failed to upload image. Please try again.");
     }
@@ -39,33 +32,26 @@ export default function CreateGroup() {
       alert("Please fill in all fields.");
       return;
     }
+    setCreate(true);
 
-    const groupData = await addDoc(collection(db, "groups"), {
-      groupName: groupName,
-      username: username,
-      description: description,
-      password: password,
-      imageURL: imageURL,
-      createdBy: [userData.name, userData.uid],
-      createdTime: Date.now(),
-      members: [
-        {
-          name: userData.name,
-          uid: userData.uid,
-          avatar: userData.avatar
-        },
-      ],
-      memberCount: 1,
-      pinnedAnnouncement: "",
-    });
-
-    const userRef = doc(db, "users", userData.uid);
-    await updateDoc(userRef, {
-      joinedGroups: arrayUnion(groupData.id),
-    });
-
-    setCreate(false)
-    navigate("/dashboard");
+    try {
+      await api.post("/groups", {
+        groupName,
+        username,
+        description,
+        password,
+        imageURL,
+      });
+      
+      // User joinedGroups update is handled by backend
+      
+      setCreate(false);
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("Create group error:", err);
+      alert("Failed to create group");
+      setCreate(false);
+    }
   };
 
   return (

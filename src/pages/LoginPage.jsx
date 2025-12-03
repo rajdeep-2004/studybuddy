@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar.jsx";
-import { loginUser } from "../api";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -17,20 +18,13 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const res = await loginUser({ email, password });
-      const data = await res.json();
-      setLoading(false);
-
-      if (res.ok && data.token) {
-        localStorage.setItem("token", data.token);
-        alert("Login successful!");
-        navigate("/dashboard");
-      } else {
-        alert(data.message || "Invalid credentials");
-      }
+      await login(email, password);
+      alert("Login successful!");
+      navigate("/dashboard");
     } catch (err) {
       console.error("Login error:", err);
-      alert("Server error. Try again.");
+      alert(err.response?.data?.message || "Login failed. Check credentials.");
+    } finally {
       setLoading(false);
     }
   };

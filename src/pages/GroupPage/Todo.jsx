@@ -1,24 +1,9 @@
 import React, { useState, useEffect } from "react";
-import {
-  collection,
-  addDoc,
-  doc,
-  query,
-  orderBy,
-  onSnapshot,
-  setDoc,
-  serverTimestamp,
-  getDoc,
-  updateDoc,
-  increment,
-} from "firebase/firestore";
-import { db } from "../../firebase.jsx";
+import api from "../../api/axios";
 import { useParams } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext.jsx";
 import { useUserData } from "../../context/UserDataContext.jsx";
 
 export default function GroupTodos() {
-  const { currentUser } = useAuth();
   const { userData } = useUserData();
   const { groupID } = useParams();
 
@@ -27,79 +12,33 @@ export default function GroupTodos() {
   const [groupMembers, setGroupMembers] = useState(null);
 
   useEffect(() => {
-    const getGroupData = async () => {
-      const groupRef = doc(db, "groups", groupID);
-      const groupSnap = await getDoc(groupRef);
-      setGroupMembers(groupSnap.data().members);
+    const fetchTodos = async () => {
+      try {
+        const res = await api.get(`/todos/${groupID}`);
+        setTodos(res.data);
+      } catch (err) {
+        console.error("Error fetching todos:", err);
+      }
     };
-    getGroupData();
 
-    const todosRef = collection(db, "groups", groupID, "todos");
-    const q = query(todosRef, orderBy("createdAt", "desc"));
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const todoList = [];
-
-      snapshot.forEach((docSnap) => {
-        const todoData = docSnap.data();
-        const todoId = docSnap.id;
-
-        const completionRef = doc(
-          db,
-          "groups",
-          groupID,
-          "todos",
-          todoId,
-          "completions",
-          currentUser.uid
-        );
-
-        onSnapshot(completionRef, (completionSnap) => {
-          const completed = completionSnap.exists()
-            ? completionSnap.data().completed
-            : false;
-
-          setTodos((prev) => {
-            const updated = prev.map((t) =>
-              t.id === todoId ? { ...t, completed } : t
-            );
-            return updated;
-          });
-        });
-
-        todoList.push({
-          id: todoId,
-          title: todoData.title,
-          createdBy: todoData.createdBy,
-          createdByName: todoData.createdByName,
-          createdAt: todoData.createdAt,
-          completed: false,
-        });
-      });
-
-      setTodos(todoList);
-    });
-
-    return () => unsubscribe();
-  }, [groupID, currentUser.uid]);
+    fetchTodos();
+  }, [groupID]);
 
   const handleCreateTodo = async () => {
-
     try {
-      await addDoc(collection(db, "groups", groupID, "todos"), {
-        title: newTodo.trim(),
-        createdBy: userData.uid,
-        createdByName: userData.name,
-        createdAt: serverTimestamp(),
+      const res = await api.post("/todos", {
+        groupId: groupID,
+        text: newTodo.trim(),
       });
-
-      for (const member of groupMembers) {
-        const userRef = doc(db, "users", member.uid);
-        await updateDoc(userRef, {
-          totalTodos: increment(1),
-        });
-      }
-
+      // Optimistically update or re-fetch. Since we populate createdBy, we might need to manually add it or re-fetch.
+      // For simplicity, let's re-fetch or construct the object.
+      // The response contains the new todo. createdBy is the ID.
+      // We need the name.
+      const newTodoItem = {
+          ...res.data,
+          createdBy: { _id: userData.uid, name: userData.name }
+      };
+      setTodos((prev) => [...prev, newTodoItem]);
       setNewTodo("");
     } catch (error) {
       alert("Error adding todo:", error);
@@ -108,25 +47,12 @@ export default function GroupTodos() {
 
   const toggleTodoCompletion = async (todoId) => {
     try {
-      const completionRef = doc(
-        db,
-        "groups",
-        groupID,
-        "todos",
-        todoId,
-        "completions",
-        userData.uid
+      await api.put(`/todos/${todoId}`);
+      setTodos((prev) =>
+        prev.map((t) =>
+          t._id === todoId ? { ...t, completed: !t.completed } : t
+        )
       );
-
-      await setDoc(completionRef, {
-        completed: "completed",
-        completedAt: serverTimestamp(),
-      });
-
-      const userRef = doc(db, "users", userData.uid);
-      await updateDoc(userRef, {
-        totalTodos: increment(-1),
-      });
     } catch (err) {
       alert("Error toggling todo completion:", err);
     }
@@ -155,18 +81,18 @@ export default function GroupTodos() {
       <div className="grid gap-4">
         {todos.map((todo) =>
           todo.completed ? null : (
-            <div
-              key={todo.id}
-              className="p-4 rounded-lg shadow flex items-center justify-between bg-white"
-            >
+              <div
+                key={todo._id}
+                className="p-4 rounded-lg shadow flex items-center justify-between bg-white"
+              >
               <div>
-                <h3 className="text-lg font-medium">{todo.title}</h3>
+                <h3 className="text-lg font-medium">{todo.text}</h3>
                 <p className="text-sm text-gray-500">
                   Created by:{" "}
                   <span className="font-bold">
-                    {todo.createdBy === userData.uid
+                    {todo.createdBy?._id === userData.uid
                       ? "You"
-                      : todo.createdByName}
+                      : todo.createdBy?.name || "Unknown"}
                   </span>
                 </p>
               </div>
@@ -174,7 +100,7 @@ export default function GroupTodos() {
                 <input
                   type="checkbox"
                   checked={todo.completed}
-                  onChange={() => toggleTodoCompletion(todo.id)}
+                  onChange={() => toggleTodoCompletion(todo._id)}
                   className="w-5 h-5"
                 />
               </div>

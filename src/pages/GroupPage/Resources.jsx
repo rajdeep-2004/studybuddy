@@ -1,26 +1,13 @@
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import {
-  collection,
-  addDoc,
-  query,
-  orderBy,
-  onSnapshot,
-  serverTimestamp,
-  deleteDoc,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../../firebase.jsx";
+import api from "../../api/axios";
 import { useUserData } from "../../context/UserDataContext.jsx";
-import { useAuth } from "../../context/AuthContext.jsx";
 import { getRandomColorCombo } from "../../utils/ColourCombos.jsx";
 
 export default function Resources() {
   const { groupID } = useParams();
   const { userData } = useUserData();
-  const { currentUser } = useAuth();
 
   const [resources, setResources] = useState([]);
   const [file, setFile] = useState(null);
@@ -28,48 +15,67 @@ export default function Resources() {
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
-    const q = query(
-      collection(db, "groups", groupID, "resources"),
-      orderBy("uploadedAt", "desc")
-    );
+    const fetchResources = async () => {
+      try {
+        const res = await api.get(`/resources/${groupID}`);
+        setResources(res.data);
+      } catch (err) {
+        console.error("Error fetching resources:", err);
+      }
+    };
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const resList = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setResources(resList);
-    });
-
-    return () => unsubscribe();
+    fetchResources();
   }, [groupID]);
 
   const handleUpload = async () => {
     if (!file) return alert("Please select a file");
     setUploading(true);
 
-    const fileRef = ref(
-      storage,
-      `studybuddy/groups/${groupID}/resources/${file.name}`
-    );
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("groupId", groupID);
+    formData.append("title", file.name); // Using filename as title for now
+
     try {
-      await uploadBytes(fileRef, file);
-      const url = await getDownloadURL(fileRef);
-
-      const fileType = file.name.split(".").pop();
-
-      await addDoc(collection(db, "groups", groupID, "resources"), {
-        fileName: file.name,
-        fileType,
-        fileURL: url,
-        uploadedBy: userData.name,
-        uploadedByUID: userData.uid,
-        uploadedAt: serverTimestamp(),
+      const res = await api.post("/resources/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-      const userRef = doc(db, "users", currentUser.uid);
-      await updateDoc(userRef, {
-        resourcesShared: userData.resourcesShared + 1,
-      });
+      
+      // Manually add to state with populated user
+      const newResource = {
+          ...res.data,
+          fileName: res.data.title, // Backend uses title, frontend uses fileName. 
+          // Wait, backend stores 'title' and 'link'. Frontend expects 'fileName' and 'fileURL'.
+          // I should map them or update frontend.
+          // Let's map them here for compatibility.
+          // Actually, let's update the frontend render logic to use title/link if available.
+          // But for now, let's map.
+          // Backend: title, link, type, createdBy (ID)
+          // Frontend expects: fileName, fileURL, fileType, uploadedBy (name)
+          // I need to fetch the user name or use userData.
+          createdBy: { _id: userData.uid, name: userData.name }
+      };
+      
+      // Re-fetch is safer to get consistent data structure if backend returns different field names
+      // But let's try to map.
+      // Backend response: { _id, title, link, type, createdBy: "ID", ... }
+      // Frontend needs: id, fileName, fileURL, fileType, uploadedBy
+      
+      // I will update the render logic to handle both or map it.
+      // Let's just re-fetch for simplicity? No, that's slow.
+      // Let's update the state.
+      
+      setResources(prev => [...prev, {
+          _id: res.data._id,
+          fileName: res.data.title,
+          fileURL: res.data.link,
+          fileType: res.data.title.split('.').pop(),
+          uploadedBy: userData.name,
+          uploadedByUID: userData.uid,
+          createdBy: { _id: userData.uid, name: userData.name } // For new logic
+      }]);
 
       setFile(null);
       setShowForm(false);
@@ -93,7 +99,8 @@ export default function Resources() {
     try {
       const confirmDelete = confirm("Are you sure?");
       if (!confirmDelete) return;
-      await deleteDoc(doc(db, `groups/${groupID}/resources/${resourceID}`));
+      await api.delete(`/resources/${resourceID}`);
+      setResources((prev) => prev.filter((r) => r._id !== resourceID));
     } catch (err) {
       alert(err.message);
     }
@@ -114,21 +121,21 @@ export default function Resources() {
 
             return (
               <div
-                key={res.id}
+                key={res._id}
                 className={`${bg}  ${border} p-4 rounded-lg shadow hover:shadow-md transition`}
               >
                 <div className="mb-2">
-                  <img src={getFileIcon(res.fileType)} className="h-5"></img>
+                  <img src={getFileIcon(res.fileType || res.title?.split('.').pop())} className="h-5"></img>
                 </div>
                 <h4 className="font-semibold text-md break-words">
-                  {res.fileName.replace(/\.[^/.]+$/, "")}
+                  {(res.fileName || res.title).replace(/\.[^/.]+$/, "")}
                 </h4>
                 <a
-                  href={res.fileURL}
+                  href={res.fileURL || res.link}
                   target="_blank"
                   rel="noreferrer"
                   className="text-[rgb(73,156,220)]"
-                  download={res.fileName}
+                  download={res.fileName || res.title}
                 >
                   View
                 </a>
@@ -137,15 +144,15 @@ export default function Resources() {
                     Uploaded by:{" "}
                     <span className="font-bold">
                       {" "}
-                      {res.uploadedBy === userData.name
+                        {res.createdBy?._id === userData.uid
                         ? "You"
-                        : res.uploadedBy}
+                        : res.createdBy?.name || res.uploadedBy}
                     </span>
                   </p>
-                  {res.uploadedBy === userData.name ? (
+                  {res.createdBy?._id === userData.uid ? (
                     <button
                       className="bg-red-300 px-2 text-sm rounded-lg"
-                      onClick={() => handleDeleteResource(res.id)}
+                      onClick={() => handleDeleteResource(res._id)}
                     >
                       Delete
                     </button>

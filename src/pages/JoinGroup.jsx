@@ -1,15 +1,5 @@
 import React, { useState } from "react";
-import { db } from "../firebase.jsx";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  doc,
-  updateDoc,
-  arrayUnion,
-  increment,
-} from "firebase/firestore";
+import api from "../api/axios";
 import { useUserData } from "../context/UserDataContext.jsx";
 import { useNavigate } from "react-router-dom";
 
@@ -28,61 +18,17 @@ export default function JoinGroup() {
     }
 
     try {
-      const q = query(
-        collection(db, "groups"),
-        where("groupName", "==", groupName),
-        where("username", "==", username)
-      );
-
-      const snapshot = await getDocs(q);
-
-
-      if (snapshot.empty) {
-        alert("No group found with that name and username.");
-        return;
-      }
-
-      const groupDoc = snapshot.docs[0];
-      const groupData = groupDoc.data();
-
-
-      if (groupData.password !== password) {
-        alert("Incorrect password.");
-        return;
-      }
-
-      const groupRef = doc(db, "groups", groupDoc.id);
-      const userObj = {
-        name: userData.name,
-        uid: userData.uid,
-        avatar: userData.avatar
-      };
-      await updateDoc(groupRef, {
-        members: arrayUnion(userObj),
-        memberCount: groupData.memberCount + 1,
+      await api.post("/groups/join", {
+        groupName,
+        username,
+        password,
       });
 
-      const todosSnapshot = await getDocs(
-        collection(db, "groups", groupDoc.id, "todos")
-      );
-      const todoCount = todosSnapshot.size;
-
-      const sessionsSnapshot = await getDocs(
-        collection(db, "groups", groupDoc.id, "sessions")
-      );
-      const sessionsCount = sessionsSnapshot.size;
-
-      const userRef = doc(db, "users", userData.uid);
-      await updateDoc(userRef, {
-        joinedGroups: arrayUnion(groupDoc.id),
-        totalTodos: increment(todoCount),
-        upcomingSessions: increment(sessionsCount)
-      });
-
-      setLogin(false)
+      setLogin(false);
       navigate("/dashboard");
     } catch (err) {
-      alert(err.message);
+      alert(err.response?.data?.msg || "Failed to join group");
+      setLogin(false);
     }
   };
 

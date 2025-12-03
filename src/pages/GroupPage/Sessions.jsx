@@ -1,24 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { db } from "../../firebase.jsx";
-import {
-  collection,
-  addDoc,
-  query,
-  orderBy,
-  onSnapshot,
-  serverTimestamp,
-  deleteDoc,
-  doc,
-  updateDoc,
-  getDoc,
-} from "firebase/firestore";
+import api from "../../api/axios";
 import { useParams } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext.jsx";
 import { useUserData } from "../../context/UserDataContext.jsx";
 
 export default function Sessions() {
   const { groupID } = useParams();
-  const { currentUser } = useAuth();
   const { userData } = useUserData();
 
   const [sessions, setSessions] = useState([]);
@@ -31,31 +17,16 @@ export default function Sessions() {
   const [groupMembers, setGroupMembers] = useState(null);
 
   useEffect(() => {
-    const q = query(
-      collection(db, "groups", groupID, "sessions"),
-      orderBy("createdAt", "desc")
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const sessionList = snapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        .sort((a, b) => new Date(a.date) - new Date(b.date)); // sort by session date
-
-      setSessions(sessionList);
-    });
-
-    const getGroupData = async () => {
-      const groupRef = doc(db, "groups", groupID);
-      const groupSnap = await getDoc(groupRef);
-      setGroupMembers(groupSnap.data().members);
+    const fetchSessions = async () => {
+      try {
+        const res = await api.get(`/sessions/${groupID}`);
+        setSessions(res.data);
+      } catch (err) {
+        console.error("Error fetching sessions:", err);
+      }
     };
 
-    getGroupData();
-
-    return () => unsubscribe();
+    fetchSessions();
   }, [groupID]);
 
   const handleCreateSession = async () => {
@@ -65,31 +36,20 @@ export default function Sessions() {
     }
 
     try {
-      await addDoc(collection(db, "groups", groupID, "sessions"), {
+      const res = await api.post("/sessions", {
+        groupId: groupID,
         title,
         date,
         time,
         link,
-        createdBy: {
-          uid: userData.uid,
-          name: userData.name,
-        },
-        createdAt: serverTimestamp(),
       });
 
+      setSessions((prev) => [...prev, { ...res.data, createdBy: { _id: userData.uid, name: userData.name } }].sort((a, b) => new Date(a.date) - new Date(b.date)));
       setTitle("");
       setDate("");
       setTime("");
       setLink("");
       setShowForm(false);
-
-      for (const member of groupMembers) {
-        const userRef = doc(db, "users", member.uid);
-        const userdata = (await getDoc(userRef)).data();
-        await updateDoc(userRef, {
-          upcomingSessions: userdata.upcomingSessions + 1,
-        });
-      }
     } catch (err) {
       alert(err.message);
     }
@@ -99,15 +59,8 @@ export default function Sessions() {
     try {
       const confirmDelete = confirm("Are you sure?");
       if (!confirmDelete) return;
-      await deleteDoc(doc(db, `groups/${groupID}/sessions/${sessionID}`));
-
-      for (const member of groupMembers) {
-        const userRef = doc(db, "users", member.uid);
-        const userdata = (await getDoc(userRef)).data();
-        await updateDoc(userRef, {
-          upcomingSessions: userdata.upcomingSessions - 1,
-        });
-      }
+      await api.delete(`/sessions/${sessionID}`);
+      setSessions((prev) => prev.filter((s) => s._id !== sessionID));
     } catch (err) {
       alert(err.message);
     }
@@ -127,7 +80,7 @@ export default function Sessions() {
         <div className="grid lg:grid-cols-4 gap-3 ">
           {sessions.map((session) => (
             <div
-              key={session.id}
+              key={session._id}
               className="bg-white p-5 rounded-lg shadow hover:shadow-2xl transition"
             >
               <h3 className="text-lg font-semibold mb-2">{session.title}</h3>
@@ -155,14 +108,14 @@ export default function Sessions() {
               <div className="flex justify-between ">
                 <p className="mt-2 text-gray-500">
                   <span className="font-semibold">Created By: </span>
-                  {session.createdBy.uid === currentUser.uid
+                  {session.createdBy?._id === userData.uid
                     ? "You"
-                    : session.createdBy.name}
+                    : session.createdBy?.name || "Unknown"}
                 </p>
-                {session.createdBy.uid === currentUser.uid ? (
+                {session.createdBy?._id === userData.uid ? (
                   <button
                     className="bg-red-300 rounded-lg px-2 mt-2"
-                    onClick={() => handleDeleteSession(session.id)}
+                    onClick={() => handleDeleteSession(session._id)}
                   >
                     {" "}
                     Delete

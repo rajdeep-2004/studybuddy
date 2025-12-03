@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar.jsx";
 import "../styles/SignUpPage.css";
-import { registerUser } from "../api";
+import { useAuth } from "../context/AuthContext";
 import Dashboard from "./Dashboard.jsx";
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const { signup } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,18 +21,13 @@ const SignUp = () => {
     }
     setLoading(true);
     try {
-      const res = await registerUser({ name, email, password, gender });
-      const data = await res.json();
-      setLoading(false);
-      if (res.ok) {
-        alert("Account created successfully!");
-        navigate("/login");
-      } else {
-        alert(data.message || "Signup failed. Try again.");
-      }
+      await signup(name, email, password, gender);
+      alert("Account created successfully!");
+      navigate("/dashboard");
     } catch (err) {
       console.error("Signup error:", err);
-      alert("Server error. Try again.");
+      alert(err.response?.data?.message || "Signup failed. Try again.");
+    } finally {
       setLoading(false);
     }
   };

@@ -4,8 +4,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import interactionPlugin from "@fullcalendar/interaction";
-import { collectionGroup, doc, getDoc, onSnapshot } from "firebase/firestore";
-import { db } from "../firebase";
+import api from "../api/axios";
 import { useUserData } from "../context/UserDataContext";
 import tippy from "tippy.js";
 import "tippy.js/dist/tippy.css";
@@ -26,47 +25,41 @@ export default function CalendarPage() {
   const groupColorMap = {};
 
   useEffect(() => {
-    if (!userData || !userData.joinedGroups || userData.joinedGroups.length === 0) return;
+    const fetchSessions = async () => {
+      try {
+        const res = await api.get("/sessions/my-sessions");
+        const sessions = [];
+        const colorPool = [...GROUP_COLORS];
 
-    const unsub = onSnapshot(collectionGroup(db, "sessions"), async (snapshot) => {
-      const sessions = [];
-      const colorPool = [...GROUP_COLORS];
+        for (const session of res.data) {
+          const groupName = session.groupId?.groupName || "Unknown Group";
 
-      for (const docSnap of snapshot.docs) {
-        const session = docSnap.data();
-        const groupID = docSnap.ref.parent.parent.id;
+          if (!groupColorMap[groupName]) {
+            groupColorMap[groupName] = colorPool.length > 0 ? colorPool.shift() : "#3B82F6";
+          }
 
-        if (!userData.joinedGroups.includes(groupID)) continue;
+          const [year, month, day] = session.date.split("-").map(Number);
+          const [hour, minute] = session.time.split(":").map(Number);
+          const startDateTime = new Date(year, month - 1, day, hour, minute);
 
-        const groupRef = doc(db, "groups", groupID);
-        const groupSnap = await getDoc(groupRef);
-        const groupData = groupSnap.exists() ? groupSnap.data() : {};
-        const groupName = groupData.groupName || "Unknown Group";
-
-        if (!groupColorMap[groupName]) {
-          groupColorMap[groupName] = colorPool.length > 0 ? colorPool.shift() : "#3B82F6";
+          sessions.push({
+            title: session.title,
+            start: startDateTime,
+            end: startDateTime,
+            groupName,
+            link: session.link || "",
+            backgroundColor: groupColorMap[groupName],
+            borderColor: groupColorMap[groupName],
+            textColor: "#ffffff",
+          });
         }
-
-        const [year, month, day] = session.date.split("-").map(Number);
-        const [hour, minute] = session.time.split(":" ).map(Number);
-        const startDateTime = new Date(year, month - 1, day, hour, minute);
-
-        sessions.push({
-          title: session.title,
-          start: startDateTime,
-          end: startDateTime,
-          groupName,
-          link: session.link || "",
-          backgroundColor: groupColorMap[groupName],
-          borderColor: groupColorMap[groupName],
-          textColor: "#ffffff",
-        });
+        setEvents(sessions);
+      } catch (err) {
+        console.error("Error fetching calendar sessions:", err);
       }
+    };
 
-      setEvents(sessions);
-    });
-
-    return () => unsub();
+    fetchSessions();
   }, [userData]);
 
   return (

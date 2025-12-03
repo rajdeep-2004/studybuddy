@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  onSnapshot,
-} from "firebase/firestore";
-import { db } from "../../firebase.jsx";
+import api from "../../api/axios";
 import { useUserData } from "../../context/UserDataContext.jsx";
 import { getRandomColorCombo } from "../../utils/ColourCombos.jsx";
 
@@ -19,38 +13,39 @@ export default function Members() {
   const [groupCreatorUID, setGroupCreatorUID] = useState("");
 
   useEffect(() => {
-    const groupRef = doc(db, "groups", groupID);
-    const groupUnsubscribe = onSnapshot(groupRef, (groupSnap) => {
-      const groupData = groupSnap.data();
-      const memberNames = groupData.members || [];
-      setGroupCreatorName(groupData.createdBy[0]);
-      setGroupCreatorUID(groupData.createdBy[1]);
-      setMembers(memberNames);
-    });
+    const fetchMembers = async () => {
+      try {
+        const res = await api.get(`/groups/${groupID}`);
+        setMembers(res.data.members);
+        // createdBy is just an ID in the group object unless populated.
+        // But wait, get /:id populates members.
+        // It does NOT populate createdBy.
+        // So res.data.createdBy is an ID.
+        setGroupCreatorUID(res.data.createdBy);
+        
+        // Find creator name from members list if they are in it (they should be)
+        const creator = res.data.members.find(m => m._id === res.data.createdBy);
+        if (creator) {
+            setGroupCreatorName(creator.name);
+        }
+      } catch (err) {
+        console.error("Error fetching members:", err);
+      }
+    };
 
-    return () => groupUnsubscribe();
+    fetchMembers();
   }, [groupID]);
 
   const handleDeleteUser = async (memberName, memberUID) => {
     const confirmDelete = confirm("Are you sure?");
     if (!confirmDelete) return;
 
-    const groupRef = doc(db, "groups", groupID);
-    const groupSnap = await getDoc(groupRef);
-    const groupData = groupSnap.data();
-    const updatedMembers = groupData.members.filter(
-      (members) => members.name !== memberName
-    );
-    await updateDoc(groupRef, { members: updatedMembers });
-    await updateDoc(groupRef, { memberCount: groupData.memberCount - 1 });
-
-    const deluserRef = doc(db, "users", memberUID);
-    const deluserSnap = await getDoc(deluserRef);
-    const deluserData = deluserSnap.data();
-    const updatedjoinedGroups = deluserData.joinedGroups.filter(
-      (groupid) => groupid !== groupID
-    );
-    await updateDoc(deluserRef, { joinedGroups: updatedjoinedGroups });
+    try {
+      await api.delete(`/groups/${groupID}/members/${memberUID}`);
+      setMembers((prev) => prev.filter((m) => m._id !== memberUID));
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   return (
@@ -65,7 +60,7 @@ export default function Members() {
             const { bg, border } = getRandomColorCombo();
             return (
               <div
-                key={mem.uid}
+                key={mem._id}
                 className={`${bg} ${border} p-4 rounded-lg shadow hover:shadow-md transition flex justify-between`}
               >
                 <div>
@@ -81,13 +76,13 @@ export default function Members() {
                     mem.name !== groupCreatorName && (
                       <button
                         className="bg-red-300 text-sm mt-2 rounded-lg px-2"
-                        onClick={() => handleDeleteUser(mem.name, mem.uid)}
+                        onClick={() => handleDeleteUser(mem.name, mem._id)}
                       >
                         Remove
                       </button>
                     )}
                 </div>
-                <img src={mem.avatar} alt="Avatar" className="h-10" />
+                <img src={mem.avatar || `https://ui-avatars.com/api/?name=${mem.name}`} alt="Avatar" className="h-10 rounded-full" />
               </div>
             );
           })}

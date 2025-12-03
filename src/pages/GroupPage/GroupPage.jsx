@@ -1,28 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { db } from "../../firebase.jsx";
-import { useParams, useNavigate } from "react-router-dom";
-import {
-  getDoc,
-  doc,
-  updateDoc,
-  collection,
-  query,
-  orderBy,
-  limit,
-  onSnapshot,
-} from "firebase/firestore";
-import { useAuth } from "../../context/AuthContext.jsx";
+import api from "../../api/axios";
 import { useUserData } from "../../context/UserDataContext.jsx";
+import { useNavigate, useParams } from "react-router-dom";
 import editIcon from "/editicon.png";
 import Sidebar from "../../components/SideBar.jsx";
 import Sessions from "./Sessions.jsx";
 import Todo from "./Todo.jsx";
 import Resources from "./Resources.jsx";
 import Members from "./Members.jsx";
-import Chat from "./Chat.jsx";
+
 
 export default function GroupPage() {
-  const { currentUser } = useAuth();
   const { userData } = useUserData();
   const navigate = useNavigate();
   const { groupID } = useParams();
@@ -44,69 +32,53 @@ export default function GroupPage() {
       setImgSrc("https://picsum.photos/500/300");
     }
 
-    const groupRef = doc(db, "groups", groupID);
-    const sessionsQuery = query(
-      collection(db, "groups", groupID, "sessions"),
-      orderBy("date"),
-      limit(1) 
-    );
-    const userRef = doc(db, "users", userData.uid);
+    const fetchGroupData = async () => {
+      try {
+        const res = await api.get(`/groups/${groupID}`);
+        setGroupData(res.data);
+        setPinnedText(res.data.pinnedAnnouncement || "");
+        setGroupDesc(res.data.description || "");
 
-    // Pinned Announcement
-    const unsubscribeGroup = onSnapshot(
-      groupRef,
-      (groupSnap) => {
-        if (groupSnap.exists()) {
-          const data = groupSnap.data();
-          setGroupData(data);
-          setPinnedText(data.pinnedAnnouncement || "");
-          setLoading(false);
+        // Check membership
+        const isMember = res.data.members.some(m => m._id === userData.uid || m === userData.uid);
+        if (!isMember) {
+           // Double check with user data if needed, but group members list is authoritative
+           // actually members is populated with objects in backend get /:id
+           // so m._id should work.
+           // But wait, if I am the creator but not in members? 
+           // Backend adds creator to members on create.
+           // So checking members list is fine.
+           if (res.data.createdBy !== userData.uid && !isMember) {
+               // Logic might be tricky if population happens.
+               // Let's rely on backend response or handle error
+           }
         }
-      },
-      (err) => {
-        alert("Error listening to group doc:", err);
-        setLoading(false);
-      }
-    );
-
-
-    const unsubscribeSession = onSnapshot(
-      sessionsQuery,
-      (snapshot) => {
-        if (!snapshot.empty) {
-          const session = snapshot.docs[0].data();
-          setNextSession(session);
+        
+        // Fetch sessions for next session
+        const sessionRes = await api.get(`/sessions/${groupID}`);
+        const sessions = sessionRes.data;
+        // Filter upcoming and sort
+        const now = new Date();
+        const upcoming = sessions.filter(s => {
+            const sDate = new Date(`${s.date}T${s.time}`);
+            return sDate > now;
+        }).sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
+        
+        if (upcoming.length > 0) {
+            setNextSession(upcoming[0]);
         } else {
-          setNextSession(null); 
+            setNextSession(null);
         }
-      },
-      (err) => {
-        alert("Error listening to session query:", err);
-      }
-    );
 
-    // checks whether current user is a member
-    const unsubscribeUser = onSnapshot(
-      userRef,
-      (docSnap) => {
-        if (docSnap.exists()) {
-          const userDoc = docSnap.data();
-          if (!userDoc.joinedGroups.includes(groupID)) {
-            alert("You are no longer a member of this group.");
-            navigate("/dashboard");
-          }
-        }
-      },
-      (err) => {
-        alert(err);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching group:", err);
+        alert("Error loading group");
+        navigate("/dashboard");
       }
-    );
-
-    return () => {
-      unsubscribeGroup();
-      unsubscribeSession();
-      unsubscribeUser();
     };
+
+    fetchGroupData();
   }, [userData, groupID, navigate]);
 
   if (loading || !groupData) {
@@ -119,8 +91,7 @@ export default function GroupPage() {
 
   const handlePinnedUpdate = async () => {
     try {
-      const groupRef = doc(db, "groups", groupID);
-      await updateDoc(groupRef, { pinnedAnnouncement: pinnedText });
+      await api.put(`/groups/${groupID}`, { pinnedAnnouncement: pinnedText });
       setEditMode(false);
       setGroupData((prev) => ({ ...prev, pinnedAnnouncement: pinnedText }));
     } catch (err) {
@@ -130,8 +101,7 @@ export default function GroupPage() {
 
   const handleGroupDescription = async () => {
     try {
-      const groupRef = doc(db, "groups", groupID);
-      await updateDoc(groupRef, { description: groupDesc });
+      await api.put(`/groups/${groupID}`, { description: groupDesc });
       setEditGD(false);
       setGroupData((prev) => ({ ...prev, description: groupDesc }));
     } catch (err) {
@@ -147,7 +117,7 @@ export default function GroupPage() {
             {/* Pinned Announcement */}
             <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-lg mb-8 shadow-sm flex items-center justify-between">
               {groupData.pinnedAnnouncement || "No pinned comment"}
-              {groupData.createdBy[1] === currentUser.uid && (
+              {groupData.createdBy === userData.uid && (
                 <button onClick={() => setEditMode(true)}>
                   <img src={editIcon} alt="Edit Icon" className="h-6 w-6" />
                 </button>
@@ -181,7 +151,7 @@ export default function GroupPage() {
               <h2 className="text-xl font-semibold mb-3">Group Description</h2>
               <div className="bg-white p-6 rounded-lg shadow text-gray-700 leading-relaxed flex justify-between items-center">
                 {groupData.description}
-                {groupData.createdBy[1] === currentUser.uid && (
+                {groupData.createdBy === userData.uid && (
                   <button onClick={() => setEditGD(true)}>
                     <img src={editIcon} alt="Edit Icon" className="h-6 w-6" />
                   </button>
@@ -246,8 +216,7 @@ export default function GroupPage() {
         return <Sessions />;
       case "todos":
         return <Todo />;
-      case "chat":
-        return <Chat />;
+
       case "resources":
         return <Resources />;
       case "members":
@@ -290,7 +259,7 @@ export default function GroupPage() {
               "overview",
               "sessions",
               "todos",
-              "chat",
+
               "resources",
               "members",
             ].map((tab) => (
@@ -306,7 +275,7 @@ export default function GroupPage() {
                 {tab === "overview" && "Overview"}
                 {tab === "sessions" && "Sessions"}
                 {tab === "todos" && "Todos"}
-                {tab === "chat" && "Chat"}
+
                 {tab === "resources" && "Resources"}
                 {tab === "members" && "Members"}
               </button>
